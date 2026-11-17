@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "release": "skills-v1",
+  "release": "skills-v2",
   "skills": [
     {
       "id": "debugging-and-error-recovery",
@@ -74,7 +74,7 @@
       "name": "html-ppt",
       "displayName": "HTML 演示稿",
       "description": "用主题、模板和动效生成可在浏览器播放的演示稿。",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "license": "MIT",
       "repository": "https://github.com/lewislulu/html-ppt-skill",
       "commit": "fd1629067909ff55b36b905476de4e5f26062a1f",
@@ -88,7 +88,7 @@
         "scripts/new-deck.sh",
         "scripts/render.sh"
       ],
-      "requirements": "浏览器播放。使用上游生成脚本需要 Bash，渲染脚本另有依赖。"
+      "requirements": "浏览器播放。模板生成需要 Bash，附带的截图脚本需要 macOS 上的 Chrome。"
     }
   ]
 }

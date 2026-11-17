@@ -15,11 +15,14 @@ class MarketTest(unittest.TestCase):
         with zipfile.ZipFile(source, "w") as z:
             z.writestr("upstream/SKILL.md", "---\nname: example\n---\nRead refs.")
             z.writestr("upstream/references/guide.md", "guide")
+            helper = zipfile.ZipInfo("upstream/scripts/run.sh")
+            helper.external_attr = 0o100755 << 16
+            z.writestr(helper, "#!/usr/bin/env bash")
             z.writestr("upstream/tests/test.py", "not runtime content")
             z.writestr("upstream/LICENSE", "upstream notice")
         entry = {
             "name": "example", "license": "MIT",
-            "path": ".", "include": ["SKILL.md", "references"],
+            "path": ".", "include": ["SKILL.md", "references", "scripts"],
             "licensePath": "LICENSE",
         }
         with tempfile.TemporaryDirectory() as temp:
@@ -29,8 +32,9 @@ class MarketTest(unittest.TestCase):
             package_skill(entry, source, output)
             self.assertEqual(first, output.read_bytes())
             with zipfile.ZipFile(output) as z:
-                self.assertEqual(z.namelist(), ["LICENSE", "SKILL.md", "references/guide.md"])
+                self.assertEqual(z.namelist(), ["LICENSE", "SKILL.md", "references/guide.md", "scripts/run.sh"])
                 self.assertEqual(z.read("LICENSE"), b"upstream notice")
+                self.assertEqual(z.getinfo("scripts/run.sh").external_attr >> 16, 0o100755)
 
     def test_rejects_traversal_and_name_mismatch(self):
         entry = {"name": "example", "license": "MIT", "path": ".", "licensePath": "LICENSE"}

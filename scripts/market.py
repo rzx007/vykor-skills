@@ -61,6 +61,7 @@ def package_skill(entry, source, output):
     include = [safe_path(path) for path in entry.get("include", [])]
     prefix = "" if entry["path"] == "." else safe_path(entry["path"]) + "/"
     files, aliases, needed = {}, {}, set(include)
+    executable = set()
     total = 0
     with zipfile.ZipFile(source) as upstream:
         roots = {item.filename.split("/")[0] for item in upstream.infolist()}
@@ -86,6 +87,8 @@ def package_skill(entry, source, output):
             if len(files) >= MAX_FILES or item.file_size > MAX_ARCHIVE or total > MAX_EXTRACTED:
                 raise ValueError("Skill exceeds archive limits")
             files[path] = upstream.read(item)
+            if (item.external_attr >> 16) & 0o111:
+                executable.add(path)
 
         for item in upstream.infolist():
             path = item.filename.removeprefix(root)
@@ -111,7 +114,7 @@ def package_skill(entry, source, output):
             notice = safe_path(entry["licenseNotice"])
             if not notice.startswith("notices/") or "LICENSE" in files:
                 raise ValueError("Invalid market license notice")
-            files["LICENSE"] = (ROOT / notice).read_bytes()
+            files["LICENSE"] = (ROOT / notice).read_text(encoding="utf-8").encode("utf-8")
         else:
             raise ValueError("Missing upstream license notice")
         if not files["LICENSE"].strip():
@@ -122,7 +125,7 @@ def package_skill(entry, source, output):
             # Stored entries keep bytes deterministic across Python/zlib versions.
             item = zipfile.ZipInfo(path)
             item.create_system = 3
-            item.external_attr = 0o100644 << 16
+            item.external_attr = (0o100755 if path in executable else 0o100644) << 16
             archive.writestr(item, content)
     if output.stat().st_size > MAX_ARCHIVE:
         raise ValueError("Skill ZIP exceeds 100 MiB")
