@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "release": "skills-v1",
+  "skills": [
+    {
+      "id": "debugging-and-error-recovery",
+      "name": "debugging-and-error-recovery",
+      "displayName": "系统排障",
+      "description": "复现错误、缩小范围、定位根因，并补上防回归检查。",
+      "version": "1.0.0",
+      "license": "MIT",
+      "repository": "https://github.com/addyosmani/agent-skills",
+      "commit": "39b723ceebf81474d0557c1fecd01eddab585563",
+      "path": "skills/debugging-and-error-recovery",
+      "licensePath": "LICENSE"
+    },
+    {
+      "id": "vercel-react-best-practices",
+      "name": "vercel-react-best-practices",
+      "displayName": "React 性能实践",
+      "description": "检查 React 和 Next.js 的组件渲染、数据加载与包体积。",
+      "version": "1.0.0",
+      "license": "MIT",
+      "repository": "https://github.com/vercel-labs/agent-skills",
+      "commit": "1a2c79d4e6c4a2283dc2c614b6538cbe1ed5ca62",
+      "path": "skills/react-best-practices",
+      "licenseNotice": "notices/vercel-react-best-practices.txt"
+    },
+    {
+      "id": "vue",
+      "name": "vue",
+      "displayName": "Vue 3 开发参考",
+      "description": "查阅 Vue 3 响应式系统、组件写法和常见 API。",
+      "version": "1.0.0",
+      "license": "MIT",
+      "repository": "https://github.com/antfu/skills",
+      "commit": "4a6bb39e7b45e26402eb215393c51ccf5df1ca4c",
+      "path": "skills/vue",
+      "licensePath": "LICENSE.md"
+    },
+    {
+      "id": "humanizer-zh",
+      "name": "humanizer-zh",
+      "displayName": "中文润色",
+      "description": "保留事实和作者语气，修整中文文稿中的重复和模板化表达。",
+      "version": "1.0.0",
+      "license": "MIT",
+      "repository": "https://github.com/op7418/Humanizer-zh",
+      "commit": "f4518a8eab97b8bfebc66a89d34320a89bef6930",
+      "path": ".",
+      "licensePath": "LICENSE",
+      "include": [
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "stop-slop",
+      "name": "stop-slop",
+      "displayName": "英文润色",
+      "description": "用短语、结构与改写示例精简英文文稿。",
+      "version": "1.0.0",
+      "license": "MIT",
+      "repository": "https://github.com/hardikpandya/stop-slop",
+      "commit": "8da1f030185bdfe8471220585162991eaeb970e9",
+      "path": ".",
+      "licensePath": "LICENSE",
+      "include": [
+        "SKILL.md",
+        "references"
+      ]
+    },
+    {
+      "id": "html-ppt",
+      "name": "html-ppt",
+      "displayName": "HTML 演示稿",
+      "description": "用主题、模板和动效生成可在浏览器播放的演示稿。",
+      "version": "1.0.0",
+      "license": "MIT",
+      "repository": "https://github.com/lewislulu/html-ppt-skill",
+      "commit": "fd1629067909ff55b36b905476de4e5f26062a1f",
+      "path": ".",
+      "licensePath": "LICENSE",
+      "include": [
+        "SKILL.md",
+        "assets",
+        "templates",
+        "references",
+        "scripts/new-deck.sh",
+        "scripts/render.sh"
+      ],
+      "requirements": "浏览器播放。使用上游生成脚本需要 Bash，渲染脚本另有依赖。"
+    }
+  ]
+}
