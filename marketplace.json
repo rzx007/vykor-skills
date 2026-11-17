@@ -3,7 +3,6 @@
   "release": "skills-v2",
   "skills": [
     {
-      "id": "debugging-and-error-recovery",
       "name": "debugging-and-error-recovery",
       "displayName": "系统排障",
       "description": "复现错误、缩小范围、定位根因，并补上防回归检查。",
@@ -15,7 +14,6 @@
       "licensePath": "LICENSE"
     },
     {
-      "id": "vercel-react-best-practices",
       "name": "vercel-react-best-practices",
       "displayName": "React 性能实践",
       "description": "检查 React 和 Next.js 的组件渲染、数据加载与包体积。",
@@ -27,7 +25,6 @@
       "licenseNotice": "notices/vercel-react-best-practices.txt"
     },
     {
-      "id": "vue",
       "name": "vue",
       "displayName": "Vue 3 开发参考",
       "description": "查阅 Vue 3 响应式系统、组件写法和常见 API。",
@@ -39,7 +36,6 @@
       "licensePath": "LICENSE.md"
     },
     {
-      "id": "humanizer-zh",
       "name": "humanizer-zh",
       "displayName": "中文润色",
       "description": "保留事实和作者语气，修整中文文稿中的重复和模板化表达。",
@@ -54,7 +50,6 @@
       ]
     },
     {
-      "id": "stop-slop",
       "name": "stop-slop",
       "displayName": "英文润色",
       "description": "用短语、结构与改写示例精简英文文稿。",
@@ -70,7 +65,6 @@
       ]
     },
     {
-      "id": "html-ppt",
       "name": "html-ppt",
       "displayName": "HTML 演示稿",
       "description": "用主题、模板和动效生成可在浏览器播放的演示稿。",
