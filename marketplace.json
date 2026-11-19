@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "release": "skills-v3",
+  "release": "skills-v4",
   "skills": [
     {
       "name": "debugging-and-error-recovery",
@@ -95,6 +95,18 @@
       "path": "skills/develop-nomi-app",
       "licensePath": "skills/develop-nomi-app/LICENSE",
       "requirements": "需要已安装的 Nomi 桌面版并启用开发者模式。示例使用 Node.js 24、npm 和公开的 @bobannomi/app-host、@bobannomi/client SDK。宿主连接和 Agent 会话需在 Nomi 开发窗口验证。"
+    },
+    {
+      "name": "create-plugin",
+      "displayName": "Vykor 插件开发",
+      "description": "创建、扩展、验证和打包 Vykor Native Plugin，附带 Native Tools、MCP 与交互页面模板。",
+      "version": "1.0.0",
+      "license": "MIT",
+      "repository": "https://github.com/rzx007/vykor-skills",
+      "commit": "adf3f26e432bffd9982f42e9e25719dbab69face",
+      "path": "skills/create-plugin",
+      "licensePath": "skills/create-plugin/LICENSE",
+      "requirements": "需要 Node.js 24。生成工程后使用 npm 安装依赖、构建和打包，支持 Native Tools 或 MCP 后台，交互页面采用官方 MCP Apps。"
     }
   ]
 }
