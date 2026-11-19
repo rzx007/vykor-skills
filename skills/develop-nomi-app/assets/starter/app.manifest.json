@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "com.example.nomi-app",
+  "name": "Nomi 开发示例",
+  "version": "0.1.0",
+  "hostApi": "^0.1.3",
+  "ui": { "type": "bundled", "entry": "dist/index.html" },
+  "capabilities": { "required": ["app.storage"], "optional": [] }
+}

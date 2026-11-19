@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nomi 开发示例</title>
+  </head>
+  <body>
+    <main>
+      <h1>Nomi 开发示例</h1>
+      <p id="status" role="status">正在连接 Nomi…</p>
+      <pre id="identity"></pre>
+      <form id="send">
+        <p><label>会话执行目录 <input name="cwd" required placeholder="桌面本机上的完整路径"></label></p>
+        <p><label>测试模型 <select name="model" required><option value="">请选择</option></select></label></p>
+        <button disabled>发送测试消息</button>
+      </form>
+      <pre id="reply" aria-live="polite"></pre>
+    </main>
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
