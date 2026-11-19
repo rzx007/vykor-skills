@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "example.text-inspector",
+  "name": "text-inspector",
+  "version": "1.2.2",
+  "description": "在右侧面板检查文本、选择问题并预览修复，引用到聊天协作；不读写文件。",
+  "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3QgeD0iOCIgeT0iNiIgd2lkdGg9IjM3IiBoZWlnaHQ9IjQ5IiByeD0iNyIgZmlsbD0iI2VlZjJmZiIgc3Ryb2tlPSIjNGY0NmU1IiBzdHJva2Utd2lkdGg9IjMiLz48cGF0aCBkPSJNMTYgMTloMjFNMTYgMjdoMTVNMTYgMzVoOSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNjM2NmYxIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS13aWR0aD0iMyIvPjxjaXJjbGUgY3g9IjQzIiBjeT0iNDMiIHI9IjExIiBmaWxsPSIjZmZmIiBzdHJva2U9IiM0ZjQ2ZTUiIHN0cm9rZS13aWR0aD0iMyIvPjxwYXRoIGQ9Im01MSA1MSA3IDciIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzRmNDZlNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2Utd2lkdGg9IjQiLz48L3N2Zz4=",
+  "introduction": "## 检查文本格式\n\n在右侧面板编辑文本，检查行尾空白和行首制表符，勾选问题后生成修复预览。也可以把选中问题引用到聊天，继续与助手讨论。\n\n插件只处理你传入的文本，不读取或写入文件；新工具结果不会覆盖正在编辑的草稿。",
+  "prompts": [
+    {
+      "title": "检查文本格式",
+      "prompt": "请检查下面文本中的行尾空白和行首制表符，指出问题所在行：\n\n在这里粘贴文本"
+    },
+    {
+      "title": "预览格式修复",
+      "prompt": "请检查我提供的文本，并让我通过交互界面选择要修复的问题；先展示修复预览，不要改动文件。"
+    }
+  ],
+  "components": {
+    "tools": [
+      {
+        "entry": "./tools/index.mjs",
+        "runtime": "node",
+        "permissions": []
+      }
+    ],
+    "apps": [
+      "./ui/apps.json"
+    ]
+  },
+  "permissions": {},
+  "runtime": {
+    "engine": "node",
+    "isolation": "process"
+  }
+}
