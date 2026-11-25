@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "release": "skills-v8",
+  "release": "skills-v9",
   "skills": [
     {
       "name": "debugging-and-error-recovery",
@@ -119,6 +119,208 @@
       "path": "skills/agent-reach",
       "licensePath": "skills/agent-reach/LICENSE",
       "requirements": "Agent 实际执行环境需 Python 3.10+ 和 Agent Reach 1.6.1；首次初始化使用 uv，安装步骤见包内说明。各渠道按需准备工具和浏览器，部分平台需要登录或配置密钥。"
+    },
+    {
+      "version": "1.0.0",
+      "name": "heritage-blueprint",
+      "displayName": "古建蓝图",
+      "description": "依据实景与史料制作可离线交互的古建蓝图，附带三维模板、字体和校验脚本。",
+      "license": "MIT AND OFL-1.1",
+      "requirements": "需要 Python 3、Node.js；查看成品需要支持 WebGL 的浏览器。字体和展示作品的许可范围见包内 COPYRIGHT.md。",
+      "repository": "https://github.com/rzx007/vykor-skills",
+      "commit": "62f461707b91bd9a63c16b5061e4af6955ccf21d",
+      "path": "skills/heritage-blueprint",
+      "licensePath": "skills/heritage-blueprint/LICENSE"
+    },
+    {
+      "version": "1.0.0",
+      "name": "blender",
+      "displayName": "Blender 制作指南",
+      "description": "按任务加载 94 份 Blender 指南，覆盖建模、材质、动画、渲染、风格和游戏资产交付。",
+      "license": "MIT",
+      "requirements": "自动操作需要 Blender 和已连接的 Blender MCP。包内含 Blender 3.0+、Python 3.10+ 与 uv 的接入说明；也支持制作方案和手动运行的 bpy 脚本。",
+      "repository": "https://github.com/rzx007/vykor-skills",
+      "commit": "62f461707b91bd9a63c16b5061e4af6955ccf21d",
+      "path": "skills/blender",
+      "licensePath": "skills/blender/LICENSE"
+    },
+    {
+      "version": "1.0.0",
+      "name": "ste",
+      "displayName": "简化技术中文",
+      "description": "按简化技术中文规则汇报结果，统一术语、状态和验证表述，由用户显式启用。",
+      "license": "MIT",
+      "repository": "https://github.com/dualface/ste-zh",
+      "commit": "f7c104315045849e7bce357664273b4e99bc5119",
+      "path": ".",
+      "licensePath": "LICENSE",
+      "include": [
+        "SKILL.md",
+        "references",
+        "examples"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "name": "anatomy",
+      "displayName": "交互式技术解剖",
+      "description": "把技术概念、设备和系统拆解为可交互 HTML 页面，附带几何组件、示例和检查脚本。",
+      "license": "MIT",
+      "repository": "https://github.com/wheresryan22/anatomy",
+      "commit": "1482e8469b0a9e0d8cc18ea2740a01423d29ae80",
+      "path": ".",
+      "licensePath": "LICENSE",
+      "include": [
+        "SKILL.md",
+        "README.md",
+        "LICENSE",
+        "agents",
+        "kit",
+        "references",
+        "scripts",
+        "examples"
+      ],
+      "requirements": "需要 Node.js 20.10+；浏览器检查和导出需要 Chrome 或 Chromium。React 集成按项目准备 React，社区发布功能另需 Git 和 GitHub CLI。"
+    },
+    {
+      "version": "1.0.0",
+      "name": "answer-me-with-html",
+      "displayName": "HTML 图文回答",
+      "description": "把 Markdown 草稿生成单页图文 HTML，支持图表、公式、主题及按需的视频导出。",
+      "license": "MIT AND Apache-2.0 AND OFL-1.1",
+      "requirements": "基本页面需要 Node.js 20+，附带单文件 CLI。视频导出另需 Chrome 和 Node.js 22+，MP4 需要 ffmpeg；字体及第三方许可随包保留。",
+      "repository": "https://github.com/rzx007/vykor-skills",
+      "commit": "62f461707b91bd9a63c16b5061e4af6955ccf21d",
+      "path": "skills/answer-me-with-html",
+      "licensePath": "skills/answer-me-with-html/LICENSE"
+    },
+    {
+      "version": "1.0.0",
+      "name": "luobo-ppt",
+      "displayName": "萝卜 PPT",
+      "description": "生成、提取和美化可编辑 PPTX，提供版式、风格、图标、原生图表和质量检查工具。",
+      "license": "MIT AND ISC",
+      "repository": "https://github.com/zhouwei713/luobo-ppt",
+      "commit": "5bc279e2e0729a7d13956b360c206338eb9c7c74",
+      "path": ".",
+      "licensePath": "LICENSE",
+      "include": [
+        "SKILL.md",
+        "README.md",
+        "INSTALL.md",
+        "install.sh",
+        "install.ps1",
+        "install.bat",
+        "agents",
+        "scripts",
+        "references",
+        "assets",
+        "config.example.json",
+        "docs"
+      ],
+      "requirements": "需要 Python 3.8+、python-pptx、Pillow、numpy、lxml 和中文字体。LibreOffice 或 PDF 渲染工具用于完整渲染检查，生图服务按需配置。"
+    },
+    {
+      "version": "1.0.0",
+      "name": "kami",
+      "displayName": "Kami 文档排版",
+      "description": "生成文档、简历、单页介绍和演示内容，附带排版模板、设计参数与导出脚本。",
+      "license": "MIT AND OFL-1.1",
+      "repository": "https://github.com/tw93/Kami",
+      "commit": "ad1de198c4721902d4601a839b7c85b72fa0e15e",
+      "path": "skills/kami",
+      "licensePath": "skills/kami/LICENSE",
+      "requirements": "需要 Python；PDF 路径按说明准备 WeasyPrint、pypdf、PyMuPDF 和 Pango，公式等功能按需准备 Node.js。中文字体及其使用许可按包内说明选择。"
+    },
+    {
+      "version": "1.0.0",
+      "name": "archify",
+      "displayName": "Archify 架构图",
+      "description": "生成可探索的架构、流程、时序和数据关系图，提供结构校验、代码分析与导出工具。",
+      "license": "Apache-2.0",
+      "repository": "https://github.com/tt-a1i/archify",
+      "commit": "62f3a995eb26ee23f784bdea4a7992340078e9be",
+      "path": "archify",
+      "licensePath": "archify/LICENSE",
+      "requirements": "需要 Node.js 18+；完整交付检查需要 Chrome、Chromium 或 Edge。部分语言分析需 Go、Rust 或 libclang。图标、字体和内嵌组件的独立许可见 THIRD_PARTY_NOTICES.md。"
+    },
+    {
+      "version": "1.0.0",
+      "name": "archify-pr",
+      "displayName": "Archify 变更图解",
+      "description": "为 Git 分支、GitHub PR 和 GitLab MR 生成变更关系图和可核对的流程说明。",
+      "license": "Apache-2.0",
+      "requirements": "需要 Node.js 18+ 和 archify 核心技能，默认从同级目录定位；跨目录安装可设置 ARCHIFY_BIN。完整交付检查还需要 Chrome、Chromium 或 Edge。",
+      "repository": "https://github.com/rzx007/vykor-skills",
+      "commit": "62f461707b91bd9a63c16b5061e4af6955ccf21d",
+      "path": "skills/archify-pr",
+      "licensePath": "skills/archify-pr/LICENSE"
+    },
+    {
+      "version": "1.0.0",
+      "name": "ponytail",
+      "displayName": "Ponytail 精简开发",
+      "description": "以完整交付为目标选择更小的实现，支持 lite、full 和 ultra 三种对话级别。",
+      "license": "MIT",
+      "repository": "https://github.com/DietrichGebert/ponytail",
+      "commit": "ebd8654c2c627f721eb8f9c0d1bd4090a29f9e10",
+      "path": "skills/ponytail",
+      "licensePath": "LICENSE"
+    },
+    {
+      "version": "1.0.0",
+      "name": "ponytail-review",
+      "displayName": "Ponytail 改动审查",
+      "description": "审查代码差异中的缺陷、安全、性能、测试及可简化之处，给出具体影响和修改建议。",
+      "license": "MIT",
+      "repository": "https://github.com/DietrichGebert/ponytail",
+      "commit": "ebd8654c2c627f721eb8f9c0d1bd4090a29f9e10",
+      "path": "skills/ponytail-review",
+      "licensePath": "LICENSE"
+    },
+    {
+      "version": "1.0.0",
+      "name": "ponytail-audit",
+      "displayName": "Ponytail 全库审查",
+      "description": "扫描整个仓库的代码质量和复杂度，按影响排序需要修复或简化的项目。",
+      "license": "MIT",
+      "repository": "https://github.com/DietrichGebert/ponytail",
+      "commit": "ebd8654c2c627f721eb8f9c0d1bd4090a29f9e10",
+      "path": "skills/ponytail-audit",
+      "licensePath": "LICENSE"
+    },
+    {
+      "version": "1.0.0",
+      "name": "ponytail-debt",
+      "displayName": "Ponytail 技术债清单",
+      "description": "收集 shortcut 标记并整理成可追踪的技术债清单。",
+      "license": "MIT",
+      "repository": "https://github.com/DietrichGebert/ponytail",
+      "commit": "ebd8654c2c627f721eb8f9c0d1bd4090a29f9e10",
+      "path": "skills/ponytail-debt",
+      "licensePath": "LICENSE"
+    },
+    {
+      "version": "1.0.0",
+      "name": "ponytail-gain",
+      "displayName": "Ponytail 基准说明",
+      "description": "展示上游公开基准中的代码量、成本和耗时结果，并区分基准与当前仓库数据。",
+      "license": "MIT",
+      "repository": "https://github.com/rzx007/vykor-skills",
+      "commit": "62f461707b91bd9a63c16b5061e4af6955ccf21d",
+      "path": "skills/ponytail-gain",
+      "licensePath": "skills/ponytail-gain/LICENSE"
+    },
+    {
+      "version": "1.0.0",
+      "name": "ponytail-help",
+      "displayName": "Ponytail 使用说明",
+      "description": "查阅六个 Ponytail 技能的入口、级别及 Vykor 中的安装和更新方式。",
+      "license": "MIT",
+      "repository": "https://github.com/rzx007/vykor-skills",
+      "commit": "62f461707b91bd9a63c16b5061e4af6955ccf21d",
+      "path": "skills/ponytail-help",
+      "licensePath": "skills/ponytail-help/LICENSE"
     }
   ]
 }
