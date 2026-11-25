@@ -55,6 +55,8 @@ description: 为 Nomi 创建独立 Web 应用，或用 AppHost 和应用清单�
 
 普通应用页面的连接用于获准的会话操作。插件、渠道、后台 MCP、项目登记或清理等操作由有管理权限的后台连接发起。用户选择本机目录时使用 AppHost，返回的目录 ID 用于 AppHost 文件访问。daemon 按已登记项目创建会话时使用该 daemon 的 `projectId`。
 
+桌面用户可以从内置工作台的「应用设置 → 连接」配置飞书。独立应用需要管理渠道时，在可信后台使用 `client.channels` 和对应的管理连接。
+
 创建前保存会话 ID、创建请求 ID 和原参数，发送前保存输入 ID。用 `client.sessions.byId(id)` 取得会话对象，调用 `session.prompt`，再用 `session.waitForRun` 等待返回的 Run ID。刷新后重新握手，核对安装身份和后台数据身份，再用 `client.sessions.getCreationResult` 查未确认的创建，用 `session.getState()` 按原输入 ID 找运行。无框架 starter 实现了这套流程。模型配置命令在运行 Nomi 的机器上执行，网页使用宿主给出的 `clientOptions`。
 
 应用要在已有会话中切换模型时，先用 `session.configuration.get()` 读取有效配置和版本。保存数据范围、会话 ID 和原请求，再调用 `session.configuration.update()` 提交要修改的字段。回包丢失后，在原数据范围用 `session.configuration.getResult()` 查结果。收到版本冲突时重新读取并让用户确认。
