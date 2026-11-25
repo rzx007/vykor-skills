@@ -1,0 +1,4 @@
+interface:
+  display_name: "史实蓝图模型"
+  short_description: "依据实景照片与史料制作蓝图三维模型，或将多个成品合并为可独立交互的单页"
+  default_prompt: "使用 $heritage-blueprint，按实景和史料制作蓝图三维 HTML；若输入已有多个模型，则保留几何与默认视角，合并成可独立交互、放大和查看标注的离线单页。"

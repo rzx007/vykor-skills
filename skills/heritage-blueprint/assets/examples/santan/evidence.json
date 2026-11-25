@@ -1,0 +1,135 @@
+{
+  "scope": {
+    "object": "杭州西湖三潭印月现存石塔，单塔结构示意；附三塔间距示意",
+    "representation": "依据实景照片和公开报道简化重建，不是实测、CAD/BIM 或考古复原",
+    "era": "现存形态；不代表宋代原塔或水下结构",
+    "units": "metres",
+    "review": "从本次已完成模型的资料台账提炼；复用或发表时重新核验链接及权利。"
+  },
+  "sources": [
+    {
+      "id": "official-photo",
+      "title": "Hangzhou English portal, Three Pools Mirroring the Moon",
+      "url": "https://www.ehangzhou.gov.cn/2018-06/14/c_271616.htm",
+      "type": "official-photo",
+      "date": "2018-06-14",
+      "use": "实景整体外观；原项目已查看图片"
+    },
+    {
+      "id": "height-report",
+      "title": "杭州网：三潭印月石塔报道，采访文物部门",
+      "url": "https://hznews.hangzhou.com.cn/chengshi/content/2018-09/24/content_7072403_0.htm",
+      "type": "news-with-specialist-interview",
+      "date": "2018-09-24",
+      "use": "高度、塔身直径、五孔、六角小亭与间距；属于报道数值，不是测绘图"
+    },
+    {
+      "id": "repair-report",
+      "title": "杭州日报 / 杭州网：石塔修复报道",
+      "url": "https://hznews.hangzhou.com.cn/chengshi/content/2013-08/06/content_4840409.htm",
+      "type": "repair-report",
+      "date": "2013-08-06",
+      "use": "构件叠置方式及葫芦顶榫接；未提供隐藏接头完整尺寸"
+    },
+    {
+      "id": "published-diagram",
+      "title": "文汇报：三潭印月结构图示",
+      "url": "https://wenhui.whb.cn/zhuzhan/xinwen/20230516/520185.html",
+      "type": "published-illustration",
+      "date": "2023-05-16",
+      "use": "构件层次辅助理解；不可当作工程测绘图"
+    },
+    {
+      "id": "close-photo",
+      "title": "石塔近景照片",
+      "url": "https://www.chinahangzhoutour.com/upload/ueditor/image/20180606/6366390604206445318280273.jpg",
+      "type": "secondary-photo",
+      "use": "小亭窗头、上下宝盖、孔口边框、塔基比例；原项目已查看图片"
+    },
+    {
+      "id": "user-photo",
+      "title": "用户提供的最终形制参照近景",
+      "file": "reference-photo.NOT-DISTRIBUTED.md",
+      "type": "user-provided-photo",
+      "use": "下腹较大、上腹较小、明显束腰、细长颈的葫芦顶；照片原始摄影者与授权范围未知，不作为公开再分发素材；本 file 指向未附原图的说明文件，不是照片。",
+      "availability": "original-photo-not-distributed"
+    }
+  ],
+  "claims": [
+    {
+      "parameter": "above-water height",
+      "value": 2.32,
+      "unit": "m",
+      "status": "reported",
+      "sources": [
+        "height-report"
+      ],
+      "basis": "按报道约束主体总高；水位和测量基准未提供完整工程说明。"
+    },
+    {
+      "parameter": "body diameter",
+      "value": 0.92,
+      "unit": "m",
+      "status": "reported",
+      "sources": [
+        "height-report"
+      ],
+      "basis": "用于定标塔身最大直径。"
+    },
+    {
+      "parameter": "openings",
+      "value": {
+        "body": 5,
+        "lanternFaces": 6
+      },
+      "status": "reported",
+      "sources": [
+        "height-report",
+        "close-photo"
+      ],
+      "basis": "五个塔身孔洞、六角小亭；孔洞为真实几何空洞。"
+    },
+    {
+      "parameter": "three-tower spacing",
+      "value": 62,
+      "unit": "m, approximately",
+      "status": "reported",
+      "sources": [
+        "height-report"
+      ],
+      "basis": "左上角作间距关系图；方向不表示地理方位，不与主模型共用比例尺。"
+    },
+    {
+      "parameter": "component assembly",
+      "status": "reported",
+      "sources": [
+        "repair-report"
+      ],
+      "basis": "大部件重力叠置，葫芦顶榫接；轴向分离仅为展示动画，不表现虚构的石构折叠铰链。"
+    },
+    {
+      "parameter": "intermediate profiles, canopy ratio, window shape",
+      "status": "photo-estimate",
+      "sources": [
+        "official-photo",
+        "close-photo",
+        "user-photo"
+      ],
+      "basis": "照片估计各层比例；下宝盖略窄于塔身；圆弧窗头、鼓形塔基。"
+    },
+    {
+      "parameter": "gourd profile",
+      "status": "photo-estimate",
+      "sources": [
+        "user-photo"
+      ],
+      "basis": "双腹、束腰、长颈的连续曲线；不绘制无依据的竖向网格、刻槽或经线。"
+    },
+    {
+      "parameter": "hidden joints, underwater foundations and unreadable carved motifs",
+      "status": "unknown",
+      "sources": [],
+      "basis": "无可靠尺寸或可辨识图像，省略；不以想象补成史实。"
+    }
+  ]
+}

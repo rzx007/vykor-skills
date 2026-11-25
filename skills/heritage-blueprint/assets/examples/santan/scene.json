@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "titleZh": "三潭印月",
+  "titleEn": "THREE POOLS MIRRORING THE MOON",
+  "edition": "01",
+  "geometry": "geometry.js",
+  "evidence": "evidence.json",
+  "inset": "inset.html",
+  "durationMs": 2850
+}
