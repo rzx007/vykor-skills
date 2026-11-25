@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "release": "skills-v7",
+  "release": "skills-v8",
   "skills": [
     {
       "name": "debugging-and-error-recovery",
@@ -107,6 +107,18 @@
       "path": "skills/create-plugin",
       "licensePath": "skills/create-plugin/LICENSE",
       "requirements": "需要 Node.js 24。生成工程后使用 npm 安装依赖、构建和打包，支持 Native Tools 或 MCP 后台，交互页面采用官方 MCP Apps。"
+    },
+    {
+      "name": "agent-reach",
+      "displayName": "Agent Reach 跨平台阅读",
+      "description": "搜索和只读读取 GitHub、YouTube、B站、小红书等平台，附带渠道选择、结果核对、登录和维护说明。",
+      "version": "1.6.1",
+      "license": "MIT",
+      "repository": "https://github.com/rzx007/vykor-skills",
+      "commit": "c142e1d292868a8875ced2840310e0145a3b6ff7",
+      "path": "skills/agent-reach",
+      "licensePath": "skills/agent-reach/LICENSE",
+      "requirements": "Agent 实际执行环境需 Python 3.10+ 和 Agent Reach 1.6.1；首次初始化使用 uv，安装步骤见包内说明。各渠道按需准备工具和浏览器，部分平台需要登录或配置密钥。"
     }
   ]
 }
