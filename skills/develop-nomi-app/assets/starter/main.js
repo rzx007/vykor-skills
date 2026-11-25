@@ -9,6 +9,8 @@ const button = form.querySelector("button")
 
 function show(result) {
   const nextStep = {
+    creation_unknown: "尚未确认会话创建。可以稍后按 F5 查询原请求。",
+    created: "已确认原会话创建。此次未提交消息，可以手动开始新的测试。",
     submitted: "消息已提交。可以按 F5 查看原消息结果。",
     unknown: "尚未查到这条消息的运行。可以稍后按 F5 查询原消息。",
   }[result.status]
@@ -25,16 +27,13 @@ async function start() {
   const { context, dataScopeId } = nomi
   status.textContent = `已连接 Nomi ${context.hostVersion} · Host API ${context.hostApiVersion}`
   identity.textContent = `开发项目 ID ${context.appId}\n数据 ID ${dataScopeId}`
-  if (context.capabilities["app.storage"]?.granted !== true) {
-    throw new Error("这个示例需要应用存储来保存原会话 ID，请确认清单和授权。")
-  }
   try {
     const previous = await restoreTest(nomi, AbortSignal.timeout(120_000))
     if (previous) show(previous)
   } catch (error) {
     reply.textContent = `读取原会话失败。${error.message}`
   }
-  const providers = await nomi.client.runtime.listModels({ signal: AbortSignal.timeout(15_000) })
+  const providers = await nomi.client.models.list({ signal: AbortSignal.timeout(15_000) })
   let preferredModel
   for (const provider of providers) {
     for (const model of provider.models) {

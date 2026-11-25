@@ -12,7 +12,11 @@
 npm run configure:model -- "<开发项目 registry.json 的绝对路径>" "<页面上的数据 ID>" "<BobanNomi 模型 ID>"
 ```
 
-脚本核对后台的实际数据目录、数据 ID 和进程，再把 BobanNomi 模型服务登记到该开发项目，并做模型列表连接测试。回到开发窗口按 F5，从列表选择模型。应用通过 Nomi 发送消息，网页只需要供应商和模型 ID。
+脚本用本机登记文件取得管理员连接，核对后台的实际数据目录、数据 ID 和进程，再用 `client.modelProviders` 配置该开发项目并检查模型目录。回到开发窗口按 F5，用页面的 `client.models.list()` 刷新列表。网页通过当前应用获准的 Agent 连接读取模型，创建会话时传供应商和模型 ID。
+
+应用有独立目录时，可以把 `ModelProviderInfo[]` 或 `({ signal }) => loadProviderList({ signal })` 传给 `new BobanNomiClient({ ...connection.clientOptions, providers })`。`client.models.list()` 返回应用目录，创建或切换会话仍要求选中的两个 ID 对应已保存的后台配置。管理员可用上面的脚本配置执行连接。目录只存放标识、显示名和能力。
+
+普通应用按 starter 的方式提交输入。daemon 会绑定 BobanNomi Run 的已保存连接，排队和继续已中断运行时沿用原绑定。遇到 `model_connection_changed` 时保留草稿并检查已配置的连接。需要改用新连接时发起新的输入。
 
 ## 使用其他 OpenAI 兼容网关
 
@@ -27,5 +31,6 @@ npm run configure:model -- "<开发项目 registry.json 的绝对路径>" "<页�
 ## 常见卡点
 
 - 没有登记文件或数据 ID 时，先确认项目已经在 Nomi 开发窗口握手。网页单独在普通浏览器打开时，无法取得项目后台连接。
+- 页面调用供应商管理接口会被拒绝。使用本机终端和该开发项目的登记文件运行配置脚本，管理员 token 和模型服务凭据留在本机配置与后台。
 - 模型列表为空时，核对服务基础地址、模型访问权限和项目的数据 ID。配置成功后刷新页面。
 - 提交一次测试消息后，F5 读取原会话。收到持久化助手回复才算通过模型执行验收。模型列表连接测试通过只说明可以读到模型目录。

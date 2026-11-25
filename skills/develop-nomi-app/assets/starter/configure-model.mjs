@@ -30,7 +30,7 @@ async function configure() {
   const official = mode === "bobannomi"
   const id = official ? "nomi-dev-bobannomi" : "nomi-dev-gateway"
   if (official) {
-    const models = await client.runtime.listModels({ signal })
+    const models = await client.models.list({ signal })
     if (models.some(provider => ["bobannomi", id].includes(provider.name) && provider.models.some(model => model.id === modelId))) {
       console.log(`开发后台已列出 BobanNomi 模型 ${modelId}。回到开发窗口按 F5 后选择它。`)
       return
@@ -47,9 +47,9 @@ async function configure() {
     throw new ConfigurationError("模型服务地址应是无内嵌凭据、查询参数或片段的 HTTP 或 HTTPS API 基础地址。")
   }
   const baseUrl = url.href.replace(/\/+$/, "")
-  const existing = (await client.runtime.modelProviders({ action: "list" }, { signal })).find(row => row.name === id)
+  const existing = (await client.modelProviders.list({ signal })).find(row => row.name === id)
   if (!existing) {
-    await client.runtime.modelProviders({ action: "createCustom", value: {
+    await client.modelProviders.createCustom({ value: {
       id, displayName: official ? "BobanNomi 模型服务" : "开发网关", baseUrl, apiFormat: "openai",
       ...(apiKey && { apiKey }),
       models: [{ id: modelId, displayName: modelId }],
@@ -57,7 +57,7 @@ async function configure() {
   } else if (existing.source !== "custom" || existing.baseUrl?.replace(/\/+$/, "") !== baseUrl || !existing.models.some(row => row.id === modelId)) {
     throw new ConfigurationError(`开发后台里已有 ${id}，其地址或模型不同。请先检查已有配置。`)
   }
-  const check = await client.runtime.providerDefaults({ action: "test", provider: id, model: modelId }, { signal })
+  const check = await client.modelProviders.defaults.test({ provider: id, model: modelId }, { signal })
   if (check.status !== "verified") {
     const category = {
       address: "基础地址有误", authentication: "认证失败", model: "模型不在供应商目录中",
