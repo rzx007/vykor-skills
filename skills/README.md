@@ -4,3 +4,4 @@
 
 - [develop-nomi-app](develop-nomi-app/SKILL.md) 用于创建 Nomi Web 应用或把已有网页接入 Nomi 桌面。配套参考文档和最小项目保留在同一技能目录。当前快照同步自 Nomi GitLab 主线提交 `97ad97e73822a7d5a2f42f1ccc6eaefd4fef4822`，使用 SDK `0.2.0`，按 MIT 许可分发。分发副本将 README 中的源码仓库内部链接改为文字说明。
 - [create-plugin](create-plugin/SKILL.md) 用于开发、验证和打包 Vykor 插件，包含 Native Tools 与 MCP 两种后台的天气工程及文本检查示例。首次收录来自 Vykor 提交 `afaddade7a3ca0a7f32f2a3d8b8a223f8c934935`，按 MIT 许可分发。市场副本将天气 Skill 存为模板文件，生成工程时恢复其入口名称。
+- [agent-reach](agent-reach/SKILL.md) 用于跨平台搜索和只读阅读。同步自官方 `v1.6.1` 提交 `7a38047acf26a729cbb27851e3cb81639da86b29`，用该版本的生成器展开中文技能，按上游 MIT 许可分发。市场副本补充首次使用、安装范围和固定版本的初始化说明。
