@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "release": "skills-v5",
+  "release": "skills-v6",
   "skills": [
     {
       "name": "debugging-and-error-recovery",
@@ -88,13 +88,13 @@
       "name": "develop-nomi-app",
       "displayName": "Nomi 应用开发",
       "description": "创建 Nomi Web 应用，或将 Vue、React 和已部署网页接入桌面，附带宿主连接、Agent 会话和联调示例。",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "license": "MIT",
       "repository": "https://github.com/rzx007/vykor-skills",
-      "commit": "f04950a56bd77de3cc3d92edfd8af027ef8e92a8",
+      "commit": "7e3e032284bb97f5745cfb432943f669bc6f3212",
       "path": "skills/develop-nomi-app",
       "licensePath": "skills/develop-nomi-app/LICENSE",
-      "requirements": "需要已安装的 Nomi 桌面版并启用开发者模式。示例使用 Node.js 24、npm 和公开的 @bobannomi/app-host、@bobannomi/client SDK。宿主连接和 Agent 会话需在 Nomi 开发窗口验证。"
+      "requirements": "需要已安装的 Nomi 桌面版并启用开发者模式。示例使用 Node.js 24、npm，以及 @bobannomi/app-host 0.2.0 和 @bobannomi/client 0.2.0。宿主连接和 Agent 会话需在 Nomi 开发窗口验证。"
     },
     {
       "name": "create-plugin",
