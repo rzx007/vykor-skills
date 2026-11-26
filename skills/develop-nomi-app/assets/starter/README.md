@@ -53,6 +53,6 @@ npm ls @bobannomi/app-host @bobannomi/client --depth=0
 
 保留应用原有的路由和开发命令，把 `nomi-app.js` 加入浏览器端代码。`connectNomi()` 检查当前页面功能和安装授权，返回宿主、受限 Client 与当前数据身份。`sendMessage()` 在应用存储保存原请求，用 `host.sessions.preparation.create()` 让后台准备所选项目或项目外目录，收到创建回执后发送输入框里的消息。`restoreLastMessage()` 核对安装与数据身份，查询原创建回执或按原输入 ID 查消息和回复。每次刷新只读原记录。只检查页面和路由时，直接用应用清单和开发地址打开开发窗口即可。需要工作台的独立工作树会话、侧边聊天或 Git 回执时，到 Nomi 自带的工作台按[工作台能力参考](../../references/web-ui.md#工作台的会话准备和临时会话)验收。
 
-完整输出和刷新恢复用 `session.waitForRun(runId)` 读取结果。流式输出通过 `syncEvents()` 观察本次运行，并用 `getVisibleSessionMessages()` 读取 SDK 合并后的助手正文。回复方式在发送前选择。 [会话同步示例](../../../../apps/client-docs/src/content/docs/guides/sync-recovery.mdx)。需要刷新后查回执时，示例用浏览器的随机数接口提前生成并保存请求 ID。
+完整输出和刷新恢复用 `session.waitForRun(runId)` 读取结果。流式输出通过 `syncEvents()` 观察本次运行，并用 `getVisibleSessionMessages()` 读取 SDK 合并后的助手正文。回复方式在发送前选择。。需要刷新后查回执时，示例用浏览器的随机数接口提前生成并保存请求 ID。
 
 有应用目录时调用 `connectNomi({ providers })`。`providers` 是 `ModelProviderInfo[]` 或接收 `{ signal }` 的异步函数。页面用 `nomi.client.models.list()` 读目录。服务地址和 API key 由开发者的管理程序提交给目标 daemon。 [目录和连接示例](../../references/test-model.md)
