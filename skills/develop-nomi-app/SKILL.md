@@ -37,13 +37,13 @@ description: 为 Nomi 创建独立 Web 应用，或用 AppHost 和应用清单�
 
 ## 打开开发窗口
 
-如果任务涉及 AppHost，先按本节步骤用 Nomi 开发窗口打开页面。确认握手和授权后，再验证目录选择、会话连接或应用存储。
+本次任务涉及 AppHost 时（例如自定义标题栏、窗口拖动或最小化、目录选择、会话连接、应用存储），用终端发 HTTP 请求检查开发服务是否就绪。服务就绪后，第一次打开应用页面就用 `AppDevelopmentOpen` 或下面的手动开窗步骤。窗口已开时聚焦或刷新现有开发窗口。确认握手和授权后，再验证本次使用的能力。
 
 服务就绪后，以当前会话能否调用 Nomi 工作台内置的 `AppDevelopmentOpen` 选择开窗方式。工具按需显示时，先用当前会话的工具查找功能按名称查找。
 
 **Nomi 内置工具可用，且已确认本机清单路径。** 调用 `AppDevelopmentOpen`，传 `manifestPath`（Nomi 所在电脑上的 `app.manifest.json` 绝对路径）和 `url`（实际开发地址）。需要开启模式、授权或切项目时，请用户在当前对话的卡片确认一次。`opened` 或 `focused` 表示已开窗。收到 `denied` 就结束开窗步骤。收到 `changed` 就先核对当前项目和地址，再发起请求。
 
-**外部 Agent、内置工具不可用，或需要用户准备本机清单。** 在回复中给出以下手动步骤，填入本次的实际项目或清单路径及完整地址。如果项目在远程机器或容器中，把清单文件或内容交给用户保存到 Nomi 所在电脑，并提供该电脑能访问的端口转发或部署地址。
+**外部 Agent、内置工具不可用，或需要用户准备本机清单。** 说明实际原因和 AppHost 验收进度，直接给出以下手动开窗步骤，填入本次的实际项目或清单路径及完整地址。如果项目在远程机器或容器中，把清单文件或内容交给用户保存到 Nomi 所在电脑，并提供该电脑能访问的端口转发或部署地址。
 
 1. 在 Nomi 桌面打开「常规设置 → 开发应用」，开启「应用开发者模式」。
 2. 点「选择项目目录」或「选择清单文件」，选择本机的项目目录或 `app.manifest.json`。
@@ -60,9 +60,9 @@ description: 为 Nomi 创建独立 Web 应用，或用 AppHost 和应用清单�
 应用需要 Agent 能力且模型来源还未明确时，先向用户说明下面两种接法。用户选定来源后，再接入对应的模型。
 
 - **自带供应商**。使用开发者提供的供应商 ID、模型 ID、模型 API 地址和 API key。 [模型目录和连接](references/test-model.md)
-- **数字员工服务**。登录取得账号访问令牌，再用该令牌获取模型 API 地址和 API key，最后用模型 API key 读取模型列表。 [数字员工登录](references/digital-employee-api.md#登录) · [获取模型配置和目录](references/digital-employee-api.md#模型目录)
+- **数字员工服务（可选）**。登录后取得账号访问令牌，再用它请求 `GET /digital/api/v1/model/provider`，获取模型服务的 Base URL（`apiUrl`）和 API key。需要模型列表时，用该 API key 请求 `GET {apiUrl}/models`。登录入口和登录后的业务流程由应用决定。 [数字员工登录](references/digital-employee-api.md#登录) · [获取模型配置和目录](references/digital-employee-api.md#模型目录)
 
-模型来源待定时，可以先实现页面、输入和待配置提示。真实回复验收需要开发者提供的模型和已保存的执行连接。开发者明确保存时，由有管理权限的程序把模型 API 地址和 API key 写入对应的项目 daemon。页面目录只保存供应商和模型的展示信息。 [模型目录和连接](references/test-model.md)
+模型来源待定时，可以先实现业务页面和待配置提示。读取目录只提供展示数据。保存执行连接须由用户明确触发，并通过已授权的管理入口写入目标 daemon。普通应用只有会话连接时，显示「待配置模型」并说明需要哪项配置，先完成界面和握手验收。 [模型目录和连接](references/test-model.md)
 
 在开发窗口用 `connectAppHost()` 握手。核对 `session-resources-v1` 和 `agent` 授权，再用 `host.sessions.getConnection()` 返回的 `clientOptions` 和开发者提供的 `providers` 列表或异步加载函数创建 `BobanNomiClient`。从 `client.models.list()` 选供应商 `name` 和模型 `id`，填入 `configuration.model` 的 `{ provider, model }`。Starter 还用 AppHost 选择项目或准备项目外目录，所需权限见 [Starter 开发窗口步骤](assets/starter/README.md#跑起来)。直接连接已有 daemon 时，可以传由该后台访问的执行目录作为 `cwd`。
 
@@ -81,6 +81,7 @@ description: 为 Nomi 创建独立 Web 应用，或用 AppHost 和应用清单�
 - 任务只验收页面展示、路由或热更新时，可以用内置浏览器或普通浏览器走原有 Web 流程。
 - 本机目录验收从已批准 `workspace.select` 的应用窗口开始。确认取消选择、列出目录、读取文本，以及刷新后用保存的目录 ID 重新打开。再停止 Agent 后台，检查当前应用仍能列目录和读文本。
 - 托管服务验收从已安装的应用启动，观察 `host.service` 的就绪状态并提交一笔业务。页面刷新后用原请求 ID 查结果，完全退出 Nomi 桌面后确认进程已停止。
+- 用户要发布可安装 ZIP 时，按安装后的实际地址和服务在 Nomi 验收本次功能。开发源码 ZIP 标明用途。
 - 加载失败先检查服务是否可访问、填的是哪一个地址，以及顶层跳转是否改变了来源。握手失败先确认打开的是开发窗口，再核对 Nomi、SDK 版本和本次使用的宿主功能。模型列表为空时检查传入的 `providers`。模型不可运行时，按[模型目录和连接](references/test-model.md)检查当前后台的供应商配置。
 - 实际验收记录加载地址、Nomi 和 SDK 版本。手动开窗以用户反馈或实际的宿主连接结果为准。Agent 验收要看到助手回复，并在刷新后核对原会话、运行和回复。切换项目时 Nomi 会先保存旧页面并停止原开发后台。
 

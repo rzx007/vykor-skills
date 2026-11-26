@@ -27,7 +27,7 @@ npm ls @bobannomi/app-host @bobannomi/client --depth=0
 
 1. 把 `app.manifest.json` 中的 `id` 和 `name` 改成自己的应用标识。沿用已有 Web 项目的构建入口时，把 `ui.entry` 改成实际路径。此示例用 `app.storage` 记住原会话，用 `workspace.select` 和 `workspace.execute` 选择项目并在其中执行。
 2. 在复制后的示例目录运行上面的 SDK 安装命令。把开发者提供的供应商 ID 和模型 ID 写入 `.env.local` 的 `VITE_NOMI_PROVIDER_ID` 和 `VITE_NOMI_MODEL_ID`，再运行 `npm run dev`。在 Nomi「常规设置 → 开发应用」启用开发者模式，选这个目录或清单，把 Vite 输出的实际地址填入「开发页面地址」，点「打开开发窗口」。审阅来源和权限，确认 `app.storage`、`workspace.select` 和 `workspace.execute`。开发入口会把 `agent` 一并列为必需权限。`npm run build` 可单独检查生产页面构建。
-3. 展开「开发连接信息」，查看开发项目 ID 和数据 ID。开发者用自己的模型 API 地址和 API key 给这个项目的 daemon 显式保存连接，供应商 ID 和模型 ID 与 `.env.local` 一致。 [目录和连接示例](../../references/test-model.md)
+3. 用获授权的管理连接，为当前项目的 daemon 显式保存开发者提供的模型 API 地址和 API key。供应商 ID 和模型 ID 与 `.env.local` 一致。连接待配置时，可先在开发窗口验证 AppHost 握手。 [目录和连接示例](../../references/test-model.md)
 4. 回到开发窗口按 F5。从「工作位置」选择已授权给当前应用的项目，或点「选项目」在本机选择目录。选「不在项目中工作」时，开发后台会为本次会话在自己的数据目录下创建工作目录。选好模型和「回复方式」，在输入框写一条消息，再点「发送」。完整输出等本轮结束后显示回复。流式输出在生成过程中更新气泡。展开「运行详情」，确认状态为 `completed`。按 F5 后核对原消息、回复、会话 ID 和运行 ID。
 5. 测试结束后关闭开发窗口并确认。Nomi 会等待页面保存并停止开发后台，之后可停止 Vite。
 

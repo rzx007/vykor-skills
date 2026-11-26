@@ -1,8 +1,10 @@
 # 数字员工远程 API
 
+数字员工服务的访问地址是 [https://bobanstaff.bobandata.com/](https://bobanstaff.bobandata.com/)。模型服务的 Base URL 由登录后获取的模型配置提供，见[模型目录](#模型目录)。
+
 应用通过远程服务登录、读取模型目录、查积分和办理充值。Nomi SDK 负责本地或远程 daemon 的会话操作。只有用户明确保存模型连接时，才通过获准的供应商管理入口把模型 API 地址和凭证交给 daemon。
 
-本模块依据仓库维护的 `docs/research/digital-employee-account-billing/`，字段核对基线是 `cd58f1d58a0ecf9f260de88d19f54ae251949937`（2026-11-12）。接入前向目标环境确认域名、发布前缀、开放的登录方式和支付规则。资料记录了源码中的请求和响应，真实环境联调仍待确认。
+本模块依据仓库维护的 `docs/research/digital-employee-account-billing/`，字段核对基线是 `cd58f1d58a0ecf9f260de88d19f54ae251949937`（2026-11-12）。使用其他部署环境时，按该环境提供的域名和发布前缀接入。登录方式和支付规则以所用环境为准。资料记录了源码中的请求和响应，真实环境联调仍待确认。
 
 ## 地址和凭证
 
