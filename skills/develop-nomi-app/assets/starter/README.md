@@ -1,19 +1,19 @@
 # Nomi 最小开发项目
 
-新建应用时，把这个目录的文件复制到你为应用选定的新项目目录。已有 Web 项目可直接参照下文「接入已有页面」。`app.manifest.json` 是 Nomi 的应用清单，`nomi-app.js` 是可接入其他网页的浏览器端模块，`main.js` 负责示例表单。`configure-model.mjs` 在运行 Nomi 的机器上为指定的开发后台配置测试模型。
+新建应用时，把这个目录的文件复制到你为应用选定的新项目目录。已有 Web 项目可直接参照下文「接入已有页面」。`app.manifest.json` 是 Nomi 的应用清单，`nomi-app.js` 是可接入其他网页的浏览器端模块，`main.js` 负责示例表单。
 
 ## 版本
 
-这个示例使用 Node.js 24、Client `0.2.0` 和 AppHost `0.2.0`。两份包发布到 npm 后，可在复制出的示例目录安装指定版本。
+这个示例使用 Node.js 24、Client `0.3.0` 和 AppHost `0.3.0`。在复制出的示例目录安装这两个 npm 包。
 
 ```sh
-npm install --save-exact @bobannomi/app-host@0.2.0 @bobannomi/client@0.2.0
+npm install --save-exact @bobannomi/app-host@0.3.0 @bobannomi/client@0.3.0
 ```
 
-发布前用两份 `0.2.0` 候选安装包。需要从源码生成时，在 BobanNomi 仓库根目录运行 `pnpm install --frozen-lockfile --ignore-scripts`，再运行 `pnpm release:sdk:dry -- 0.2.0 --out .tools/sdk-candidate-0.2.0`。输出目录须尚未创建。用打包命令打印的实际路径在 starter 目录安装两份包，再核对版本。
+从源码验证时用两份 `0.3.0` 候选安装包。需要从源码生成时，在 BobanNomi 仓库根目录运行 `pnpm install --frozen-lockfile --ignore-scripts`，再运行 `pnpm release:sdk:dry -- 0.3.0 --out .tools/sdk-candidate-0.3.0`。输出目录须尚未创建。用打包命令打印的实际路径在 starter 目录安装两份包，再核对版本。
 
 ```sh
-npm install --save-exact "/path/to/bobannomi-app-host-0.2.0.tgz" "/path/to/bobannomi-client-0.2.0.tgz"
+npm install --save-exact "/path/to/bobannomi-app-host-0.3.0.tgz" "/path/to/bobannomi-client-0.3.0.tgz"
 npm ls @bobannomi/app-host @bobannomi/client --depth=0
 ```
 
@@ -23,11 +23,15 @@ npm ls @bobannomi/app-host @bobannomi/client --depth=0
 
 ## 跑起来
 
-1. 把 `app.manifest.json` 中的 `id` 和 `name` 改成自己的应用标识。沿用已有 Web 项目的构建入口时，把 `ui.entry` 改成实际路径。此示例用 Nomi 应用存储记住原会话，所以需要 `app.storage`。
-2. 在复制后的示例目录运行上面的 SDK 安装命令，它也会安装项目的 Vite 依赖。再运行 `npm run dev`。在 Nomi「常规设置 → 开发应用」启用开发者模式，选这个目录或清单，把 Vite 输出的实际地址填入「开发页面地址」，点「打开开发窗口」。审阅来源，批准 `app.storage` 和开发入口要求的 `agent`。`npm run build` 可单独检查生产页面构建。
-3. 优先在页面选择 BobanNomi 模型服务。需要配置服务时，记下页面上的开发项目 ID 和数据 ID，按[测试模型说明](../../references/test-model.md)操作，也可以接入其他 OpenAI 兼容网关。复制示例到单独目录时，模型说明可从原技能目录打开。
-4. 回到开发窗口按 F5，在表单里填开发后台能访问的完整执行目录。此 starter 的开发后台运行在 Nomi 桌面机器上。选择测试模型，点击「发送测试消息」。示例绑定会话 ID，通过 `session.prompt()` 提交并等待 `session.waitForRun()` 返回 `completed` 和 `NOMI_NPM_OK`。再按 F5，核对原会话 ID、运行 ID 和回复。
+通过 Nomi 开发窗口运行本例，页面需要 AppHost 提供项目目录、会话连接和应用存储。本机使用 Vite 输出的回环地址，远程联调使用 HTTPS 地址。
+
+1. 把 `app.manifest.json` 中的 `id` 和 `name` 改成自己的应用标识。沿用已有 Web 项目的构建入口时，把 `ui.entry` 改成实际路径。此示例用 `app.storage` 记住原会话，用 `workspace.select` 和 `workspace.execute` 选择项目并在其中执行。
+2. 在复制后的示例目录运行上面的 SDK 安装命令。把开发者提供的供应商 ID 和模型 ID 写入 `.env.local` 的 `VITE_NOMI_PROVIDER_ID` 和 `VITE_NOMI_MODEL_ID`，再运行 `npm run dev`。在 Nomi「常规设置 → 开发应用」启用开发者模式，选这个目录或清单，把 Vite 输出的实际地址填入「开发页面地址」，点「打开开发窗口」。审阅来源和权限，确认 `app.storage`、`workspace.select` 和 `workspace.execute`。开发入口会把 `agent` 一并列为必需权限。`npm run build` 可单独检查生产页面构建。
+3. 展开「开发连接信息」，查看开发项目 ID 和数据 ID。开发者用自己的模型 API 地址和 API key 给这个项目的 daemon 显式保存连接，供应商 ID 和模型 ID 与 `.env.local` 一致。 [目录和连接示例](../../references/test-model.md)
+4. 回到开发窗口按 F5。从「工作位置」选择已授权给当前应用的项目，或点「选项目」在本机选择目录。选「不在项目中工作」时，开发后台会为本次会话在自己的数据目录下创建工作目录。选好模型和「回复方式」，在输入框写一条消息，再点「发送」。完整输出等本轮结束后显示回复。流式输出在生成过程中更新气泡。展开「运行详情」，确认状态为 `completed`。按 F5 后核对原消息、回复、会话 ID 和运行 ID。
 5. 测试结束后关闭开发窗口并确认。Nomi 会等待页面保存并停止开发后台，之后可停止 Vite。
+
+连接提示版本或权限有问题时，在开发窗口核对 `agent` 授权和以上三个清单权限。本例需要宿主提供会话连接、会话准备和目录列表，对应 `session-resources-v1`、`session-controls-v1`、`workspace-v1`、`resource-catalog-v1`。
 
 如果应用需要在已有会话中切换模型，按[会话配置与原请求恢复](../../references/web-ui.md#配置已创建的会话)使用会话对象的 `configuration` 方法。
 
@@ -47,6 +51,8 @@ npm ls @bobannomi/app-host @bobannomi/client --depth=0
 
 ## 接入已有页面
 
-保留应用原有的路由和开发命令，把 `nomi-app.js` 加入浏览器端代码。`connectNomi()` 检查当前页面功能和安装授权，返回宿主、受限 Client 与当前数据身份。`sendTest()` 在应用存储保存创建请求，再用选定目录和模型发一次消息。`restoreTest()` 核对安装与数据身份，查询原创建回执或按原输入 ID 查运行和回复。每次刷新只读原记录。纯页面联调可先用应用清单和开发地址检查握手。需要工作台的独立工作树会话、侧边聊天或 Git 回执时，到 Nomi 自带的工作台按[工作台能力参考](../../references/web-ui.md#工作台的会话准备和临时会话)验收。
+保留应用原有的路由和开发命令，把 `nomi-app.js` 加入浏览器端代码。`connectNomi()` 检查当前页面功能和安装授权，返回宿主、受限 Client 与当前数据身份。`sendMessage()` 在应用存储保存原请求，用 `host.sessions.preparation.create()` 让后台准备所选项目或项目外目录，收到创建回执后发送输入框里的消息。`restoreLastMessage()` 核对安装与数据身份，查询原创建回执或按原输入 ID 查消息和回复。每次刷新只读原记录。只检查页面和路由时，直接用应用清单和开发地址打开开发窗口即可。需要工作台的独立工作树会话、侧边聊天或 Git 回执时，到 Nomi 自带的工作台按[工作台能力参考](../../references/web-ui.md#工作台的会话准备和临时会话)验收。
 
-有应用目录时调用 `connectNomi({ providers })`。`providers` 是 `ModelProviderInfo[]` 或接收 `{ signal }` 的异步函数。页面用 `nomi.client.models.list()` 读目录。服务地址和凭据由配置脚本经管理连接保存。 [测试模型说明](../../references/test-model.md)
+完整输出和刷新恢复用 `session.waitForRun(runId)` 读取结果。流式输出通过 `syncEvents()` 观察本次运行，并用 `getVisibleSessionMessages()` 读取 SDK 合并后的助手正文。回复方式在发送前选择。 [会话同步示例](../../../../apps/client-docs/src/content/docs/guides/sync-recovery.mdx)。需要刷新后查回执时，示例用浏览器的随机数接口提前生成并保存请求 ID。
+
+有应用目录时调用 `connectNomi({ providers })`。`providers` 是 `ModelProviderInfo[]` 或接收 `{ signal }` 的异步函数。页面用 `nomi.client.models.list()` 读目录。服务地址和 API key 由开发者的管理程序提交给目标 daemon。 [目录和连接示例](../../references/test-model.md)

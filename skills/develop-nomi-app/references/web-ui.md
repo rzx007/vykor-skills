@@ -9,11 +9,11 @@ Nomi 开发窗口加载 Web 地址。应用原有的路由、组件、样式和�
 | 无框架 | 使用项目已有 Web 服务，或运行本技能的 [Vite 最小示例](../assets/starter/README.md) | 浏览器模块的事件回调。若使用 npm SDK，由项目构建器解析模块并打进网页资源 |
 | 已部署的远程站点 | 在 Nomi 开发设置选本机清单，再填 Nomi 所在机器能访问的 HTTP 或 HTTPS 页面 URL | 通过站点自己的发布流程上线浏览器接入代码。Vue、React 或无框架页面都可以部署到远程 |
 
-页面只需在开发窗口显示时，选择有效的应用清单并填写页面地址即可。需要验证 AppHost 时，按[版本选择和安装命令](../assets/starter/README.md#版本)添加 `@bobannomi/app-host`。连接从用户操作中发起，页面遇到连接错误时可显示调试提示，现有普通浏览器流程继续可用。需要 Agent 时，再添加 `@bobannomi/client`，并参考[会话示例](../assets/starter/nomi-app.js)接入。
+只验证页面和路由时，在 Nomi 开发窗口选择应用清单、填写页面地址即可。需要 AppHost 时，按[版本选择和安装命令](../assets/starter/README.md#版本)添加 `@bobannomi/app-host`，从用户操作发起连接，在 Nomi 开发窗口验收握手和授权。现有普通浏览器流程照常使用。需要 Agent 时，再添加 `@bobannomi/client`，并参考[会话示例](../assets/starter/nomi-app.js)接入。
 
 ## 读用户选中的本机目录
 
-在清单声明 `workspace.select`，由用户在安装时批准。点击「选择目录」时用下列流程，把文件列表和文本结果显示在页面中。
+在清单声明 `workspace.select`，由用户在打开开发窗口或安装应用时批准。点击「选择目录」时用下列流程，把文件列表和文本结果显示在页面中。
 
 ```js
 const directory = await host.workspace.pick()
@@ -32,8 +32,9 @@ if (directory) {
 
 ## 工作台的会话准备和临时会话
 
-`connectAppHost()` 返回 `AppHost`。先用 `host.hasFeature()` 检查窗口提供的功能。普通应用用经 `agent` 授权的 `host.sessions.getConnection()` 取得受限连接，交给 Client 管理会话和运行。以下操作从 Nomi 自带的工作台验证。
+`connectAppHost()` 返回 `AppHost`。先用 `host.hasFeature()` 检查窗口提供的功能。普通应用用经 `agent` 授权的 `host.sessions.getConnection()` 取得受限连接，交给 Client 管理会话和运行。Starter 的项目选择和项目外会话在开发窗口验证。独立工作树、临时侧边聊天、Git 回执和目标窗口按下面的步骤在 Nomi 自带的工作台验证。
 
+- **选择项目或项目外会话**。Starter 在开发窗口用 `host.workspace.list()` 列出应用已授权的目录，用 `host.workspace.pick()` 添加本机项目。选项目时向 `host.sessions.preparation.create()` 传 `workspaceId`，选项目外时传 `outsideProject: true`，两者都用 `taskLocation: "current"`。目录选择和项目执行分别需要 `workspace.select` 和 `workspace.execute`。等待原请求的创建回执后再发送输入。
 - **独立工作树会话**。在 `session-controls-v1` 可用且已授予 `workspace.execute` 时，保存已登记的 `workspaceId`、`dataScopeId`、`sessionId`、`requestId` 和配置，再用 `host.sessions.preparation.create(original)` 提交，`original.taskLocation` 填 `"worktree"`。项目外的会话只支持 `outsideProject: true` 与 `taskLocation: "current"`。daemon 准备目录并保存会话绑定。收到 `retry: "query"` 和原 `requestId` 时，用 `host.sessions.preparation.getResult(original)` 查原回执。工作台可在测试 Git 项目中新建会话，选择「任务工作位置 → 独立工作目录」后发送消息，核对执行目录并清理测试会话。
 - **临时侧边聊天**。在 `auxiliary-sessions-v1` 可用时，以当前页面的原会话 `connection` 和 `sessionId` 调 `host.sessions.auxiliary.getOptions`。提交 `open(original)` 前，把选项 ID、`optionsRevision`、原会话连接、会话 ID、`requestId` 与 `id` 留在页面内。`open` 返回临时会话连接，`get(original)` 查询原回执。结束时用 `close(original)` 关闭临时会话，再用 `opened.connection.close()` 释放它的页面连接。保留原会话连接，供回包不明时查询 `closed` 回执。在工作台的「侧边聊天」发送测试消息，关标签时确认「关闭并销毁」。
 - **Git 回执和窗口**。对已绑定目标发起 `switchBranch` 或 `createBranch` 前保存分支名、预期 HEAD 和 `requestId`。用 `host.desktop.git.getOperation({ targetId, requestId, original })` 查原回执，`original` 形如 `{ kind: "git.switchBranch", body: { branch, expectedHead } }`。重开页面时先核对数据范围与原目录身份，再绑定该目录取新的目标 ID。用完释放目标。当前宿主窗口走 `host.window`。其他已打开的目标窗口走 `host.desktop.windows`，由宿主校验它们与页面和目标的归属。
@@ -75,7 +76,7 @@ npm create vite@latest my-vue-app -- --template vue --no-interactive
 npm create vite@latest my-react-app -- --template react --no-interactive
 ```
 
-进入生成的项目目录，按上面的说明添加用得上的 SDK，接入下文对应的组件，把[最小清单](../assets/starter/app.manifest.json)复制到项目根并填写自己的应用信息。安装项目依赖后运行 `npm run dev`，在 Nomi 里选这个项目目录并填写开发服务实际输出的地址。
+进入生成的项目目录，按上面的说明添加用得上的 SDK，接入下文对应的组件，按 [Starter 清单](../assets/starter/app.manifest.json)在项目根填写应用信息和实际需要的权限。安装项目依赖后运行 `npm run dev`，在 Nomi 里选这个项目目录并填写开发服务实际输出的地址。
 
 ## Vue 示例
 

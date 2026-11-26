@@ -3,19 +3,128 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Nomi 开发示例</title>
+    <title>Nomi 聊天示例</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --background: #f3f5f8;
+        --surface: #fff;
+        --text: #172235;
+        --muted: #516276;
+        --line: #dbe2ea;
+        --accent: #2046a0;
+        --accent-hover: #183780;
+        --reply: #f1f4f8;
+        --sent: #e6efff;
+        font: 14px/1.55 system-ui, "Microsoft YaHei", sans-serif;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; color: var(--text); background: var(--background); }
+      .chat {
+        display: flex;
+        flex-direction: column;
+        width: min(100% - 32px, 800px);
+        height: calc(100dvh - 48px);
+        min-height: 400px;
+        margin: 24px auto;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--surface);
+      }
+      header { padding: 20px 24px; border-bottom: 1px solid var(--line); }
+      h1 { margin: 0; font-size: 1.25rem; }
+      #status { margin: 4px 0 0; color: var(--muted); overflow-wrap: anywhere; }
+      .conversation { flex: 1; overflow-y: auto; padding: 24px; }
+      .message { width: fit-content; max-width: min(100%, 576px); margin-bottom: 16px; }
+      .sent { margin-inline-start: auto; text-align: end; }
+      .speaker { margin: 0 0 4px; color: var(--muted); font-size: 0.85rem; }
+      .bubble {
+        margin: 0;
+        padding: 10px 14px;
+        border-radius: 12px;
+        background: var(--reply);
+        text-align: start;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+      }
+      .sent .bubble { background: var(--sent); }
+      details { color: var(--muted); font-size: 0.85rem; }
+      summary { width: fit-content; cursor: pointer; }
+      pre { margin: 6px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+      form { display: grid; gap: 12px; padding: 16px 24px; border-top: 1px solid var(--line); }
+      .settings { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr) minmax(0, 0.75fr); gap: 12px; }
+      label { display: grid; min-width: 0; gap: 4px; color: var(--muted); font-size: 0.85rem; }
+      textarea, select, button { min-height: 36px; border-radius: 8px; font: inherit; }
+      textarea, select { width: 100%; padding: 6px 10px; border: 1px solid var(--line); color: var(--text); background: var(--surface); }
+      .project { display: flex; align-items: end; gap: 8px; }
+      .project label { flex: 1; }
+      #add-project { border: 1px solid var(--line); background: var(--surface); color: var(--accent); }
+      #add-project:hover:not(:disabled) { background: var(--reply); }
+      .composer { display: flex; align-items: end; gap: 12px; }
+      .composer label { flex: 1; }
+      textarea { min-height: 54px; max-height: 180px; resize: vertical; }
+      button { flex-shrink: 0; padding: 6px 14px; border: 0; background: var(--accent); color: white; cursor: pointer; }
+      button:hover:not(:disabled) { background: var(--accent-hover); }
+      button:disabled { opacity: 0.55; cursor: default; }
+      :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+      @media (max-width: 560px) {
+        .chat { width: 100%; height: 100dvh; margin: 0; border: 0; border-radius: 0; }
+        header, .conversation, form { padding-inline: 16px; }
+        .settings { grid-template-columns: minmax(0, 1fr); }
+      }
+    </style>
   </head>
   <body>
-    <main>
-      <h1>Nomi 开发示例</h1>
-      <p id="status" role="status">正在连接 Nomi…</p>
-      <pre id="identity"></pre>
+    <main class="chat">
+      <header>
+        <h1>Nomi 聊天示例</h1>
+        <p id="status" role="status">正在连接 Nomi…</p>
+      </header>
+      <section class="conversation" aria-label="对话">
+        <div id="sent-message" class="message sent" hidden>
+          <p class="speaker">你</p>
+          <p id="sent-text" class="bubble"></p>
+        </div>
+        <div class="message">
+          <p class="speaker">Nomi</p>
+          <p id="reply" class="bubble" aria-live="polite">选择模型和工作位置后，就可以开始聊天。</p>
+        </div>
+        <details id="run-details" hidden>
+          <summary>运行详情</summary>
+          <pre id="run-info"></pre>
+        </details>
+      </section>
       <form id="send">
-        <p><label>会话执行目录 <input name="cwd" required placeholder="桌面本机上的完整路径"></label></p>
-        <p><label>测试模型 <select name="model" required><option value="">请选择</option></select></label></p>
-        <button disabled>发送测试消息</button>
+        <div class="settings">
+          <label>模型
+            <select name="model" required><option value="">请选择</option></select>
+          </label>
+          <div class="project">
+            <label>工作位置
+              <select name="workspace">
+                <option value="">不在项目中工作</option>
+              </select>
+            </label>
+            <button type="button" id="add-project" disabled>选项目</button>
+          </div>
+          <label>回复方式
+            <select name="replyMode">
+              <option value="complete">完整输出</option>
+              <option value="stream">流式输出</option>
+            </select>
+          </label>
+        </div>
+        <div class="composer">
+          <label>消息
+            <textarea name="message" rows="2" required placeholder="输入消息…"></textarea>
+          </label>
+          <button type="submit" disabled>发送</button>
+        </div>
+        <details>
+          <summary>开发连接信息</summary>
+          <pre id="identity"></pre>
+        </details>
       </form>
-      <pre id="reply" aria-live="polite"></pre>
     </main>
     <script type="module" src="./main.js"></script>
   </body>
