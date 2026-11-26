@@ -57,7 +57,9 @@ description: 为 Nomi 创建独立 Web 应用，或用 AppHost 和应用清单�
 
 ## 调用 Agent
 
-应用需要 Agent 能力且模型来源还未明确时，先向用户说明下面两种接法。用户选定来源后，再接入对应的模型。
+应用需要 Nomi Agent 能力时，把实际发送入口接到 AppHost 授权的 Nomi 会话，用 `BobanNomiClient` 的 `session.prompt()` 发消息，从同一个 Run 读取结果。第三方聊天或终端组件负责界面交互。模型供应商决定 daemon 使用的连接。应用直连模型须有用户明确要求，调用路径以供应商文档为准。
+
+模型来源还未明确时，先向用户说明下面两种接法。
 
 - **自带供应商**。使用开发者提供的供应商 ID、模型 ID、模型 API 地址和 API key。 [模型目录和连接](references/test-model.md)
 - **数字员工服务（可选）**。登录后取得账号访问令牌，再用它请求 `GET /digital/api/v1/model/provider`，获取模型服务的 Base URL（`apiUrl`）和 API key。需要模型列表时，用该 API key 请求 `GET {apiUrl}/models`。登录入口和登录后的业务流程由应用决定。 [数字员工登录](references/digital-employee-api.md#登录) · [获取模型配置和目录](references/digital-employee-api.md#模型目录)
@@ -83,6 +85,6 @@ description: 为 Nomi 创建独立 Web 应用，或用 AppHost 和应用清单�
 - 托管服务验收从已安装的应用启动，观察 `host.service` 的就绪状态并提交一笔业务。页面刷新后用原请求 ID 查结果，完全退出 Nomi 桌面后确认进程已停止。
 - 用户要发布可安装 ZIP 时，按安装后的实际地址和服务在 Nomi 验收本次功能。开发源码 ZIP 标明用途。
 - 加载失败先检查服务是否可访问、填的是哪一个地址，以及顶层跳转是否改变了来源。握手失败先确认打开的是开发窗口，再核对 Nomi、SDK 版本和本次使用的宿主功能。模型列表为空时检查传入的 `providers`。模型不可运行时，按[模型目录和连接](references/test-model.md)检查当前后台的供应商配置。
-- 实际验收记录加载地址、Nomi 和 SDK 版本。手动开窗以用户反馈或实际的宿主连接结果为准。Agent 验收要看到助手回复，并在刷新后核对原会话、运行和回复。切换项目时 Nomi 会先保存旧页面并停止原开发后台。
+- 实际验收记录加载地址、Nomi 和 SDK 版本。手动开窗以用户反馈或实际的宿主连接结果为准。Agent 验收从应用实际发送入口追到 `session.prompt()`，确认同一次 Nomi 运行返回回复，并在刷新后核对原会话、运行和回复。切换项目时 Nomi 会先保存旧页面并停止原开发后台。
 
 交付项目改动、可运行命令和实际验证结果，写清页面构建和 Nomi 联调各做到哪一步。本技能面向开发联调，使用现有 Nomi 安装和项目开发命令。

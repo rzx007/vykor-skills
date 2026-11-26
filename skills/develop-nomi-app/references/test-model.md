@@ -15,7 +15,7 @@ Starter 把这两个 ID 整理成 `ModelProviderInfo[]`，随 AppHost 给出的�
 
 ## 显式保存执行连接
 
-发送消息前，由有管理权限的程序把模型地址、API key 和可执行模型保存到目标 daemon。管理连接由该 daemon 的管理方明确提供。示例中的 `daemonBaseUrl` 和 `daemonAdminToken` 用于连接 Nomi 后台，`gatewayUrl` 和 `apiKey` 来自模型供应商。供应商 ID 和模型 ID 与页面目录一致。
+发送消息前，由有管理权限的程序把模型地址、API key 和可执行模型保存到目标 daemon。管理连接由该 daemon 的管理方明确提供。示例中的 `daemonBaseUrl` 和 `daemonAdminToken` 用于连接 Nomi 后台，`gatewayUrl` 和 `apiKey` 来自模型供应商。供应商 ID 和模型 ID 与页面目录一致。`apiFormat: "openai"` 是 daemon 使用的供应商协议设置。接入 Nomi Agent 的应用通过 `session.prompt()` 提交消息，由 daemon 用已保存的连接调用模型。
 
 ```js
 import { BobanNomiClient } from "@bobannomi/client"
