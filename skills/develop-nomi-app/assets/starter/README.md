@@ -4,14 +4,18 @@
 
 ## 版本
 
-本例使用 Node.js 24，`package.json` 已固定 AppHost `0.4.0` 和 Client `0.3.1`。运行本例需要支持 `getAuthorizedAgentConnection()` 的 Nomi 桌面，后台需支持应用模型连接和会话目录创建。复制 Starter 后，安装并核对依赖版本。
+本例使用 Node.js 24。在复制后的 Starter 目录运行 `npm install`，按 `package.json` 安装 npm 发布的 AppHost `0.4.0` 和 Client `0.3.1`。Nomi 桌面要支持 `getAuthorizedAgentConnection()`，后台还要支持应用模型连接和会话目录创建。
 
 ```sh
 npm install
 npm ls @bobannomi/app-host @bobannomi/client --depth=0
 ```
 
-已有项目可运行 `npm install --save-exact @bobannomi/app-host@0.4.0 @bobannomi/client@0.3.1`。验证尚未发布的 Nomi 源码时，使用对应构建和本地打包的 SDK。
+验证当前源码时，在复制后的 Starter 目录安装同一提交打包的两套 SDK，将下方路径替换为打包输出的实际路径。
+
+```sh
+npm install --save-exact "/path/to/bobannomi-app-host.tgz" "/path/to/bobannomi-client.tgz"
+```
 
 保留 `package-lock.json`，方便复现安装。已有项目沿用原包管理器，只添加缺少的 SDK。只做宿主握手时，仅安装 `@bobannomi/app-host`。
 
@@ -38,7 +42,7 @@ npm ls @bobannomi/app-host @bobannomi/client --depth=0
 
 如果应用需要在已有会话中切换模型，按[会话配置与原请求恢复](../../references/web-ui.md#配置已创建的会话)使用会话对象的 `configuration` 方法。
 
-若在 starter 上增加工具审批、后台任务展示或草稿附件，按[页面连接参考](../../references/web-ui.md#会话里的权限后台任务和附件)使用对应的 SDK 入口，并在 Nomi 开发窗口用真实授权范围验证。
+Starter 的文本测试关闭了工具。在应用启用需要用户决定的工具后，用 `connectNomi()` 返回的 Client 观察当前会话的待处理请求，按原请求 ID 提交用户的工具审批或 `AskUser` 答案，再核对对应运行的后续状态。后台任务和草稿附件也有各自的 SDK 入口。 [页面连接参考](../../references/web-ui.md#会话里的权限后台任务和附件)
 
 ## 添加本机目录读取
 

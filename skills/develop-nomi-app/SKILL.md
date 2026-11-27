@@ -26,7 +26,7 @@ description: 为 Nomi 创建独立 Web 应用，或用 AppHost 和应用清单�
 先确定用户希望开发的 Web 应用目录。接入已有项目时，用用户指定的应用目录，或在当前工作区定位用户指向的 Web 应用入口。新建项目时，使用用户给出的空目录，或在当前任务工作区选一个未占用的子目录并告诉用户路径。本技能的链接和示例从技能目录读取，清单、应用代码和项目命令都以选定的 Web 应用目录为准。
 
 1. **现有项目**先看入口、包管理器、开发命令和构建路径。沿用现有框架、路由、组件和后端，把 Nomi 接入放进浏览器端入口或一个独立调试页。**空项目**以用户指定的框架起步，Vue 或 React 可以用[新建工程命令](references/web-ui.md#新建-vue-或-react-工程)。简单验证可直接复制无框架的[最小项目](assets/starter/README.md)。已有项目和部署站点的接法见[页面接入](references/web-ui.md)。
-2. 需要连接宿主时安装公开 `@bobannomi/app-host`，需要 Agent 会话时再装 `@bobannomi/client`。已有项目沿用包管理器和锁文件。使用 Starter 时选择支持应用模型连接的 SDK 和 Nomi。在项目根填写自己的应用 ID、名称、入口和权限。只验证页面和路由时，权限数组可留空，沿用项目原有依赖。 [版本和安装](assets/starter/README.md#版本) · [Starter 清单](assets/starter/app.manifest.json)
+2. 需要连接宿主时安装公开 `@bobannomi/app-host`，需要 Agent 会话时再装 `@bobannomi/client`。已有项目沿用包管理器和锁文件。复制 Starter 后运行 `npm install`，安装发布版 AppHost `0.4.0` 和 Client `0.3.1`，并选用支持应用模型连接的 Nomi。在项目根填写自己的应用 ID、名称、入口和权限。只验证页面和路由时，权限数组可留空，沿用项目原有依赖。 [版本和安装](assets/starter/README.md#版本) · [Starter 清单](assets/starter/app.manifest.json)
 3. 启动项目的开发服务，记录终端实际输出且运行 Nomi 桌面的电脑能访问的 HTTP/HTTPS 地址。已有远程站点可以沿用部署方式。热更新由项目开发服务器提供。
 
 应用需要用户选择本机目录并读取文本时，在清单声明 `workspace.select`，按[本机目录接入](references/web-ui.md#读用户选中的本机目录)从点击事件调用 `host.workspace.pick()`。
@@ -41,7 +41,7 @@ description: 为 Nomi 创建独立 Web 应用，或用 AppHost 和应用清单�
 
 服务就绪后，以当前会话能否调用 Nomi 工作台内置的 `AppDevelopmentOpen` 选择开窗方式。工具按需显示时，先用当前会话的工具查找功能按名称查找。
 
-**Nomi 内置工具可用，且已确认本机清单路径。** 调用 `AppDevelopmentOpen`，传 `manifestPath`（Nomi 所在电脑上的 `app.manifest.json` 绝对路径）和 `url`（实际开发地址）。需要开启模式、授权或切项目时，请用户在当前对话的卡片确认一次。`opened` 或 `focused` 表示已开窗。收到 `denied` 就结束开窗步骤。收到 `changed` 就先核对当前项目和地址，再发起请求。
+**Nomi 内置工具可用，且已确认本机清单路径。** 调用 `AppDevelopmentOpen`，传 `manifestPath`（Nomi 所在电脑上的 `app.manifest.json` 绝对路径）和 `url`（实际开发地址）。需要为开发副本指定后台数据目录时，额外传 `dataRoot`，填写 Nomi 所在电脑上的绝对目录。需要确认时，请用户在当前对话的卡片核对实际数据目录并确认。`opened` 或 `focused` 表示已开窗。收到 `denied` 就结束开窗步骤。收到 `changed` 就先核对当前项目、地址和数据目录，再发起请求。
 
 **外部 Agent、内置工具不可用，或需要用户准备本机清单。** 说明实际原因和 AppHost 验收进度，直接给出以下手动开窗步骤，填入本次的实际项目或清单路径及完整地址。如果项目在远程机器或容器中，把清单文件或内容交给用户保存到 Nomi 所在电脑，并提供该电脑能访问的端口转发或部署地址。
 
@@ -49,7 +49,9 @@ description: 为 Nomi 创建独立 Web 应用，或用 AppHost 和应用清单�
 2. 点「选择项目目录」或「选择清单文件」，选择本机的项目目录或 `app.manifest.json`。
 3. 在「开发页面地址」填入实际 HTTP/HTTPS 地址，点「打开开发窗口」，按提示确认来源和能力。
 
-开发窗口会以普通应用身份连接当前项目的独立开发后台。联调结束后关闭窗口并确认，等 Nomi 停止开发后台再停 Web 开发服务。托管服务用正式安装的应用验收。开发窗口内的目录选择按清单授予 `workspace.select`。独立工作树、临时侧边聊天、Git 回执和目标窗口用 Nomi 自带的工作台验收。 [工作台能力参考](references/web-ui.md#工作台的会话准备和临时会话)
+Main 启动开发后台。手动开窗或省略 `dataRoot` 时，默认用当前用户主目录下的 `.<appId>`，其中 `appId` 取清单的 `id`。同一个 `appId` 的不同开发副本需要隔离时，分别传不同的绝对目录。使用同一目录会访问同一份数据库，会话可见范围仍由应用授权决定，同一目录同一时间只由一个后台占用。需要继续用原有开发库时，传它原来的数据根目录。
+
+开发窗口以普通应用身份通过 AppHost 取得后台连接。联调结束后关闭窗口并确认，等 Nomi 停止开发后台再停 Web 开发服务。托管服务用正式安装的应用验收。开发窗口内的目录选择按清单授予 `workspace.select`。独立工作树、临时侧边聊天、Git 回执和目标窗口用 Nomi 自带的工作台验收。 [工作台能力参考](references/web-ui.md#工作台的会话准备和临时会话)
 
 ## 数字员工远程服务
 
@@ -78,7 +80,10 @@ description: 为 Nomi 创建独立 Web 应用，或用 AppHost 和应用清单�
 
 - **声明工具。** 在清单声明 `agent` 并取得授权。创建会话时在 `configuration.tools.allowed` 填需要的工具名，例如 `WebSearch`、`WebFetch` 或 `AskUser`。`allowed: []` 关闭所有工具，省略 `allowed` 使用后台和角色的默认工具范围，仍受权限限制。
 - **获取运行状态。** 用 `client.sessions.byId(sessionId)` 取得会话对象，再用 `session.prompt()` 提交输入。用回执里的 `run.id` 区分本次运行。回执尚无 `run` 时，按原输入 ID 从 `session.getState()` 的快照或后续更新查关联的运行。用 `syncEvents(client, { sessionId, signal })` 观察运行、消息和权限的实时更新。 [Starter 会话示例](assets/starter/nomi-app.js)
-- **处理审批和提问。** 会话可以用 `configuration.approvalMode: "ask"` 让需要审批的操作等待用户决定。等待运行的同时，用 `client.permissions.requests.list({ sessionId, status: "pending" })` 查待处理请求。普通工具审批按用户选择调用 `requests.reply()`，以原请求 ID 提交 `{ status: "approved", decision: "once" }` 或 `{ status: "denied" }`。后台支持 `features.questions >= 1` 且收到 `AskUser` 时，从 `payload.input` 读取问题，用 `requests.answerQuestion(request.id, { answer })` 提交用户的答案。 [审批和提问入口](references/web-ui.md#会话里的权限后台任务和附件)
+- **处理审批和提问。** 会话可以用 `configuration.approvalMode: "ask"` 让需要审批的操作等待用户决定。普通应用用同一个 Client 观察自己获准访问的会话的运行和待处理请求。`Shell`、`Write` 等普通工具审批按用户选择用 `client.permissions.requests.reply()` 提交，`AskUser` 提问用 `requests.answerQuestion()` 提交。两者都使用原请求 ID。应用决定如何把请求交给用户，daemon 核对会话和请求，再决定运行能否继续。 [审批和提问入口](references/web-ui.md#会话里的权限后台任务和附件)
+
+  联调普通应用的工具审批时，使用支持应用回复人工审批的 Nomi 后台。Nomi 1.2.38 可以查到 `Shell` 或 `Write` 的待审请求，提交回复时会返回 `403 resource_unavailable`。
+
 - **把回复交给应用。** `session.waitForRun(run.id)` 返回 `{ run, messages }`，先看 `run.status` 再处理结果。实时读取用 `getVisibleSessionMessages(state.buckets[sessionId])`。两者的每条消息都包含 `{ message, parts }`，例如从 `message.role === "assistant"` 的消息中取 `part.type === "text"` 的正文。界面怎么展示、回复如何保存或交给哪段业务代码，都由应用开发者决定。
 
 在 BobanNomi 源码的 `apps/client-docs/examples/node/` 下可参考 `first-run.ts`、`sync-events.ts` 和 `run-with-permissions.ts`。`apps/client-docs/src/content/docs/guides/permissions.mdx` 还演示了 `AskUser` 的单独答复。
@@ -97,5 +102,6 @@ description: 为 Nomi 创建独立 Web 应用，或用 AppHost 和应用清单�
 - 用户要发布可安装 ZIP 时，按安装后的实际地址和服务在 Nomi 验收本次功能。开发源码 ZIP 标明用途。
 - 加载失败先检查服务地址和页面来源。握手失败先确认打开的是开发窗口，再核对 Nomi、SDK 版本和本次使用的宿主功能。模型列表为空时检查传入的 `providers`。模型不可运行时核对应用提供的连接、当前账号和所选模型。 [模型目录和连接](references/test-model.md)
 - 实际验收记录加载地址、Nomi 和 SDK 版本。手动开窗以用户反馈或实际的宿主连接结果为准。Agent 验收从应用实际发送入口追到 `session.prompt()`，确认同一次 Nomi 运行返回回复，并在刷新后核对原会话、运行和回复。切换项目时 Nomi 会先保存旧页面并停止原开发后台。
+- 应用接入审批或提问时，从自己的会话触发对应请求，核对原请求 ID、用户决定和同一次运行的后续状态。
 
 交付项目改动、可运行命令和实际验证结果，写清页面构建和 Nomi 联调各做到哪一步。本技能面向开发联调，使用现有 Nomi 安装和项目开发命令。
