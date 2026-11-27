@@ -45,9 +45,9 @@ if (directory) {
 
 ## 会话里的权限、后台任务和附件
 
-- 使用 AppHost 授权的页面 Client，在自己的会话内用 `client.permissions.requests.list({ sessionId, status: "pending" })` 或 `syncEvents()` 读取待处理请求。在等待运行时把请求交给用户。`Shell`、`Write` 等普通工具审批用原请求 ID 调用 `requests.reply()`，单次批准传 `{ status: "approved", decision: "once" }`，拒绝传 `{ status: "denied" }`。支持 `features.questions >= 1` 的后台可用 `requests.answerQuestion(request.id, { answer })` 回复 `AskUser`。答案用 `JSON.stringify({ selected, custom })` 编码，两个对象都以从 0 开始的题号为键。`selected` 的值是从 0 开始的选项下标数组，`custom` 的值是用户填写的文字。
+- 使用 AppHost 授权的页面 Client，在自己的会话内用 `client.permissions.requests.list({ sessionId, status: "pending" })` 或从 `session.observe({ signal })` 的 `permissions` 读取待处理请求。在等待运行时把请求交给用户。`Shell`、`Write` 等普通工具审批用原请求 ID 调用 `requests.reply()`，单次批准传 `{ status: "approved", decision: "once" }`，拒绝传 `{ status: "denied" }`。支持 `features.questions >= 1` 的后台可用 `requests.answerQuestion(request.id, { answer })` 回复 `AskUser`。答案用 `JSON.stringify({ selected, custom })` 编码，两个对象都以从 0 开始的题号为键。`selected` 的值是从 0 开始的选项下标数组，`custom` 的值是用户填写的文字。
 - daemon 核对原请求、会话授权及当前待处理状态。后台要求由原宿主连接回复时，通过这条获准的宿主连接处理。查询或撤销已保存的批准需要有管理该授权权限的后台连接。
-- 后台任务用 `session.jobs.list()` 查询，后续读取或等待传返回的 `job.target`，其中子 Agent 目标还带 `runId`。持续展示会话时用 `syncEvents(client, { sessionId, signal })`，断流后 SDK 会用最新会话快照恢复。
+- 后台任务用 `session.jobs.list()` 查询，后续读取或等待传返回的 `job.target`，其中子 Agent 目标还带 `runId`。持续展示会话时用 `session.observe({ signal })`，断流后 SDK 会用最新会话快照恢复。
 - 由宿主提供 `attachments-v1` 且已经取得当前草稿目标时，用 `host.attachments.getConnection({ targetId })` 取得受限连接，再用它的 `clientOptions` 创建 `BobanNomiClient`。上传使用该目标的草稿 ID。保存原 `requestId`、`draftId`、SHA-256、字节数、文件名、媒体类型和后台数据身份，回包丢失时在原范围用 `client.attachments.getUpload(original)` 查询。
 
 ## 托管本机服务

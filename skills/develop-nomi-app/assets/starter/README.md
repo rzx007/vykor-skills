@@ -4,7 +4,7 @@
 
 ## 版本
 
-本例使用 Node.js 24。在复制后的 Starter 目录运行 `npm install`，按 `package.json` 安装 npm 发布的 AppHost `0.4.0` 和 Client `0.3.1`。Nomi 桌面要支持 `getAuthorizedAgentConnection()`，后台还要支持应用模型连接和会话目录创建。
+本例使用 Node.js 24。在复制后的 Starter 目录运行 `npm install`，按 `package.json` 安装 npm 发布的 AppHost 和 Client `0.5.0`。Nomi 桌面要支持 `getAuthorizedAgentConnection()`，后台还要支持应用模型连接和会话目录创建。
 
 ```sh
 npm install
@@ -60,6 +60,8 @@ Starter 的文本测试关闭了工具。在应用启用需要用户决定的工
 
 保留应用原有的路由和开发命令，把 `nomi-app.js` 加入浏览器端代码。`connectNomi()` 检查当前页面功能和安装授权，返回宿主、受限 Client 与当前数据身份。`sendMessage()` 在应用存储保存原请求，用 `client.sessions.create()` 让后台准备所选项目或项目外目录，确认创建成功后发送输入。`restoreLastMessage()` 核对安装与数据身份，查询原创建回执或按原输入 ID 查消息和回复。每次刷新只读原记录。页面卸载或热更新时，Starter 用 `AbortSignal` 结束自己的等待和订阅。AppHost 管理共享连接。需要工作台的独立工作树会话、侧边聊天或 Git 回执时，到 Nomi 自带的工作台验收。 [工作台能力参考](../../references/web-ui.md#工作台的会话准备和临时会话)
 
-完整输出和刷新恢复用 `session.waitForRun(runId)` 读取结果。流式输出通过 `syncEvents()` 观察本次运行，并用 `getVisibleSessionMessages()` 读取 SDK 合并后的助手正文。回复方式在发送前选择。需要刷新后查回执时，示例用浏览器的随机数接口提前生成并保存请求 ID。
+完整输出和刷新恢复用 `session.waitForRun(runId)` 读取结果。流式输出用 `session.observe({ signal })` 观察会话，按 `message.runId` 读取本轮助手正文。回复方式在发送前选择。需要刷新后查回执时，示例用浏览器的随机数接口提前生成并保存请求 ID。
+
+明确拒绝时，示例保留输入供修改。回包丢失时，刷新页面会按原输入 ID 查询，区分已有输入和结果待确认。
 
 调用 `connectNomi({ providers })`，每个供应商的 `models` 提供选项，`connection` 提供地址和 API key，可以是按需加载的异步函数。界面用 `nomi.client.models.list()` 取得模型选项。正式安装的应用要在清单里声明并获批模型网关来源。 [目录和连接示例](../../references/test-model.md)

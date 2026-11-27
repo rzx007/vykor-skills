@@ -1,5 +1,5 @@
 import { connectAppHost } from "@bobannomi/app-host"
-import { BobanNomiClient, getVisibleSessionMessages, syncEvents } from "@bobannomi/client"
+import { BobanNomiClient } from "@bobannomi/client"
 
 const checkpointKey = "nomi-app-starter.last-test.v2"
 
@@ -55,7 +55,7 @@ export async function sendMessage(nomi, workspaceId, model, inputText, { signal,
   }, { signal })
   if (!run) return { sessionId, status: "submitted" }
   return onText
-    ? streamReply(client, sessionId, run.id, signal, onText)
+    ? streamReply(session, run.id, signal, onText)
     : readReply(session, run.id, signal)
 }
 
@@ -77,10 +77,10 @@ export async function restoreLastMessage(nomi, signal) {
   }
   const session = client.sessions.byId(sessionId)
   const { inputs, runs } = await session.getState({ signal, partView: "summary" })
-  const inputText = inputs.find(input => input.id === promptId)?.content
+  const input = inputs.find(input => input.id === promptId)
   const run = runs.find(run => run.inputId === promptId)
-  if (!run) return { sessionId, status: "unknown", inputText }
-  return { ...await readReply(session, run.id, signal), inputText }
+  if (!run) return { sessionId, status: input ? "submitted" : "unknown", inputText: input?.content }
+  return { ...await readReply(session, run.id, signal), inputText: input?.content }
 }
 
 async function readReply(session, runId, signal) {
@@ -88,16 +88,14 @@ async function readReply(session, runId, signal) {
   return { sessionId: session.id, runId, status: run.status, reply: assistantText(messages) }
 }
 
-async function streamReply(client, sessionId, runId, signal, onText) {
+async function streamReply(session, runId, signal, onText) {
   let displayed = ""
-  for await (const { state } of syncEvents(client, { sessionId, signal })) {
-    const bucket = state.buckets[sessionId]
-    const run = bucket?.runs[runId]
+  for await (const { runs, messages } of session.observe({ signal })) {
+    const run = runs.find(candidate => candidate.id === runId)
     if (!run) continue
-    const messages = getVisibleSessionMessages(bucket).filter(({ message }) => message.runId === runId)
-    const reply = assistantText(messages)
+    const reply = assistantText(messages.filter(({ message }) => message.runId === runId))
     if (run.status !== "pending" && run.status !== "running") {
-      return { sessionId, runId, status: run.status, reply }
+      return { sessionId: session.id, runId, status: run.status, reply }
     }
     // 每次用 SDK 合并后的正文刷新气泡，重连或模型重试时也走同一条链路。
     if (reply !== displayed) {
