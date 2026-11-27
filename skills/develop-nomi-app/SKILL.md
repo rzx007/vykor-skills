@@ -68,17 +68,26 @@ description: 为 Nomi 创建独立 Web 应用，或用 AppHost 和应用清单�
 
 在开发窗口用 `connectAppHost()` 握手。核对 `session-resources-v1` 和 `agent` 授权，再用 `host.getAuthorizedAgentConnection()` 返回的 `clientOptions` 和开发者提供的 `providers` 列表或异步加载函数创建 `BobanNomiClient`。从 `client.models.list()` 选供应商 `name` 和模型 `id`，填入 `client.sessions.create()` 的 `configuration.model`。用 AppHost 选择项目时传 `workspaceId`，项目外会话传 `outsideProject: true`。直接连接已有 daemon 时，可以传由该后台访问的执行目录作为 `cwd`。 [Starter 开发窗口步骤](assets/starter/README.md#跑起来)
 
-同一页面共享的 Agent 连接由 AppHost 管理。组件用自己的 `AbortController` 取消请求和订阅。需要停止后台运行时，使用 Client 的会话中断入口。
+同一页面共享的 Agent 连接由 AppHost 管理。组件用自己的 `AbortController` 取消请求和订阅。需要停止后台运行时，调用 `session.interrupt()`。
 
 普通应用页面的连接用于获准的会话操作。插件、渠道、后台 MCP、项目登记或清理等操作由有管理权限的后台连接发起。用户选择本机目录时使用 AppHost，返回的目录 ID 用于 AppHost 文件访问。daemon 按已登记项目创建会话时使用该 daemon 的 `projectId`。
 
 桌面用户可以从内置工作台的「应用设置 → 连接」配置飞书。独立应用需要管理渠道时，在可信后台使用 `client.channels` 和对应的管理连接。
 
-用 `client.sessions.byId(id)` 取得会话对象，调用 `session.prompt()`，再用 `session.waitForRun(run.id)` 读取这次运行的状态和消息。需要刷新恢复时，创建前保存会话 ID、创建请求 ID 和原参数，发送前保存输入 ID。刷新后重新握手，核对安装身份和后台数据身份。Starter 用 `client.sessions.getCreationResult()` 查未确认的创建，用 `session.getState()` 按原输入 ID 找 Run ID，再用同一个 `waitForRun()` 读取回复。页面可以选择完整输出或流式输出。
+### 会话工具、状态和回复
 
-应用要在已有会话中切换模型时，先用 `session.configuration.get()` 读取有效配置和版本。保存数据范围、会话 ID 和原请求，再调用 `session.configuration.update()` 提交要修改的字段。回包丢失后，在原数据范围用 `session.configuration.getResult()` 查结果。收到版本冲突时重新读取并让用户确认。
+- **声明工具。** 在清单声明 `agent` 并取得授权。创建会话时在 `configuration.tools.allowed` 填需要的工具名，例如 `WebSearch`、`WebFetch` 或 `AskUser`。`allowed: []` 关闭所有工具，省略 `allowed` 使用后台和角色的默认工具范围，仍受权限限制。
+- **获取运行状态。** 用 `client.sessions.byId(sessionId)` 取得会话对象，再用 `session.prompt()` 提交输入。用回执里的 `run.id` 区分本次运行。回执尚无 `run` 时，按原输入 ID 从 `session.getState()` 的快照或后续更新查关联的运行。用 `syncEvents(client, { sessionId, signal })` 观察运行、消息和权限的实时更新。 [Starter 会话示例](assets/starter/nomi-app.js)
+- **处理审批和提问。** 会话可以用 `configuration.approvalMode: "ask"` 让需要审批的操作等待用户决定。等待运行的同时，用 `client.permissions.requests.list({ sessionId, status: "pending" })` 查待处理请求。普通工具审批按用户选择调用 `requests.reply()`，以原请求 ID 提交 `{ status: "approved", decision: "once" }` 或 `{ status: "denied" }`。后台支持 `features.questions >= 1` 且收到 `AskUser` 时，从 `payload.input` 读取问题，用 `requests.answerQuestion(request.id, { answer })` 提交用户的答案。 [审批和提问入口](references/web-ui.md#会话里的权限后台任务和附件)
+- **把回复交给应用。** `session.waitForRun(run.id)` 返回 `{ run, messages }`，先看 `run.status` 再处理结果。实时读取用 `getVisibleSessionMessages(state.buckets[sessionId])`。两者的每条消息都包含 `{ message, parts }`，例如从 `message.role === "assistant"` 的消息中取 `part.type === "text"` 的正文。界面怎么展示、回复如何保存或交给哪段业务代码，都由应用开发者决定。
 
-应用自己展示审批或工具提问时，用当前页面的 Client 连接查询 `client.permissions.requests` 并按原 ID 提交用户的决定。后台任务从 `session.jobs` 查询。需要附件时，先检查宿主是否提供草稿附件连接。接法见[会话里的权限、后台任务和附件](references/web-ui.md#会话里的权限后台任务和附件)。
+在 BobanNomi 源码的 `apps/client-docs/examples/node/` 下可参考 `first-run.ts`、`sync-events.ts` 和 `run-with-permissions.ts`。`apps/client-docs/src/content/docs/guides/permissions.mdx` 还演示了 `AskUser` 的单独答复。
+
+需要刷新恢复时，创建前保存会话 ID、创建请求 ID 和原参数，发送前保存输入 ID。刷新后重新握手，核对安装身份和后台数据身份。Starter 用 `client.sessions.getCreationResult()` 查未确认的创建，用 `session.getState()` 按原输入 ID 找 Run ID，再用同一个 `waitForRun()` 读取回复。
+
+应用要调整已有会话的模型或工具时，先用 `session.configuration.get()` 读取有效配置和版本。保存数据范围、会话 ID 和原请求，再调用 `session.configuration.update()` 提交要修改的字段。回包丢失后，在原数据范围用 `session.configuration.getResult()` 查结果。收到版本冲突时重新读取并让用户确认。
+
+后台任务从 `session.jobs` 查询。需要附件时，先检查宿主是否提供草稿附件连接。 [会话里的后台任务和附件](references/web-ui.md#会话里的权限后台任务和附件)
 
 ## 验收和排查
 
