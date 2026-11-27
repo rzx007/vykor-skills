@@ -12,7 +12,7 @@ import { connectAppHost } from "@bobannomi/app-host"
 import { BobanNomiClient } from "@bobannomi/client"
 
 const host = await connectAppHost({ hostApi: "^0.1.3" })
-const { clientOptions } = await host.sessions.getConnection()
+const { clientOptions } = await host.getAuthorizedAgentConnection()
 const name = "my-provider"
 const displayName = "我的供应商"
 const client = new BobanNomiClient({

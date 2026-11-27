@@ -15,6 +15,12 @@ const workspaceSelect = form.elements.namedItem("workspace")
 const addProject = document.querySelector("#add-project")
 const button = form.querySelector('button[type="submit"]')
 
+const page = new AbortController()
+const stop = () => page.abort()
+window.addEventListener("pagehide", stop, { signal: page.signal })
+import.meta.hot?.dispose(stop)
+const requestSignal = () => AbortSignal.any([page.signal, AbortSignal.timeout(120_000)])
+
 async function readTestModel(path, signal) {
   const response = await fetch(path, { signal, headers: { "X-Nomi-Starter": "1" }, cache: "no-store" })
   if (!response.ok) throw new Error("无法读取示例的本机模型配置。")
@@ -64,12 +70,12 @@ function addWorkspace({ id, displayName }) {
 }
 
 async function start() {
-  const nomi = await connectNomi({ providers })
+  const nomi = await connectNomi({ providers, signal: page.signal })
   const { context, dataScopeId } = nomi
   status.textContent = `已连接 Nomi ${context.hostVersion} · Host API ${context.hostApiVersion}`
   identity.textContent = `开发项目 ID ${context.appId}\n数据 ID ${dataScopeId}`
   try {
-    const previous = await restoreLastMessage(nomi, AbortSignal.timeout(120_000))
+    const previous = await restoreLastMessage(nomi, requestSignal())
     if (previous) show(previous)
   } catch (error) {
     reply.textContent = `读取原会话失败。${error.message}`
@@ -94,7 +100,7 @@ async function start() {
       addProject.disabled = false
     }
   })
-  for (const provider of await nomi.client.models.list()) {
+  for (const provider of await nomi.client.models.list({ signal: page.signal })) {
     for (const model of provider.models) {
       const value = JSON.stringify({ provider: provider.name, model: model.id })
       modelSelect.add(new Option(`${provider.displayName} / ${model.label}`, value))
@@ -125,7 +131,7 @@ async function start() {
       const onText = replyMode.value === "stream"
         ? text => { reply.textContent = text || "正在等待回复…" }
         : undefined
-      const result = await sendMessage(nomi, workspaceSelect.value, model, inputText, { signal: AbortSignal.timeout(120_000), onText })
+      const result = await sendMessage(nomi, workspaceSelect.value, model, inputText, { signal: requestSignal(), onText })
       show({ ...result, inputText })
       if (result.status !== "creation_unknown") messageInput.value = ""
       if (result.status === "submitted") return

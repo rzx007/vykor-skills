@@ -4,14 +4,14 @@
 
 ## 版本
 
-本例使用 Node.js 24，已在 `package.json` 固定 Client 和 AppHost `0.3.1`。复制 Starter 后，运行以下命令安装并核对版本。运行会话时，Nomi 的后台须支持应用模型连接和会话目录创建。
+本例使用 Node.js 24，`package.json` 已固定 AppHost `0.4.0` 和 Client `0.3.1`。运行本例需要支持 `getAuthorizedAgentConnection()` 的 Nomi 桌面，后台需支持应用模型连接和会话目录创建。复制 Starter 后，安装并核对依赖版本。
 
 ```sh
 npm install
 npm ls @bobannomi/app-host @bobannomi/client --depth=0
 ```
 
-已有项目可安装 `npm install --save-exact @bobannomi/app-host@0.3.1 @bobannomi/client@0.3.1`。验证源码构建时，可以用 `npm install --save-exact` 安装同一提交生成的两份 SDK 安装包。
+已有项目可运行 `npm install --save-exact @bobannomi/app-host@0.4.0 @bobannomi/client@0.3.1`。验证尚未发布的 Nomi 源码时，使用对应构建和本地打包的 SDK。
 
 保留 `package-lock.json`，方便复现安装。已有项目沿用原包管理器，只添加缺少的 SDK。只做宿主握手时，仅安装 `@bobannomi/app-host`。
 
@@ -54,7 +54,7 @@ npm ls @bobannomi/app-host @bobannomi/client --depth=0
 
 ## 接入已有页面
 
-保留应用原有的路由和开发命令，把 `nomi-app.js` 加入浏览器端代码。`connectNomi()` 检查当前页面功能和安装授权，返回宿主、受限 Client 与当前数据身份。`sendMessage()` 在应用存储保存原请求，用 `client.sessions.create()` 让后台准备所选项目或项目外目录，确认创建成功后发送输入。`restoreLastMessage()` 核对安装与数据身份，查询原创建回执或按原输入 ID 查消息和回复。每次刷新只读原记录。需要工作台的独立工作树会话、侧边聊天或 Git 回执时，到 Nomi 自带的工作台验收。 [工作台能力参考](../../references/web-ui.md#工作台的会话准备和临时会话)
+保留应用原有的路由和开发命令，把 `nomi-app.js` 加入浏览器端代码。`connectNomi()` 检查当前页面功能和安装授权，返回宿主、受限 Client 与当前数据身份。`sendMessage()` 在应用存储保存原请求，用 `client.sessions.create()` 让后台准备所选项目或项目外目录，确认创建成功后发送输入。`restoreLastMessage()` 核对安装与数据身份，查询原创建回执或按原输入 ID 查消息和回复。每次刷新只读原记录。页面卸载或热更新时，Starter 用 `AbortSignal` 结束自己的等待和订阅。AppHost 管理共享连接。需要工作台的独立工作树会话、侧边聊天或 Git 回执时，到 Nomi 自带的工作台验收。 [工作台能力参考](../../references/web-ui.md#工作台的会话准备和临时会话)
 
 完整输出和刷新恢复用 `session.waitForRun(runId)` 读取结果。流式输出通过 `syncEvents()` 观察本次运行，并用 `getVisibleSessionMessages()` 读取 SDK 合并后的助手正文。回复方式在发送前选择。需要刷新后查回执时，示例用浏览器的随机数接口提前生成并保存请求 ID。
 

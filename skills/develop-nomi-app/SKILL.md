@@ -66,7 +66,9 @@ description: 为 Nomi 创建独立 Web 应用，或用 AppHost 和应用清单�
 
 模型来源待定时，可以先实现业务页面和待配置提示。取得模型来源后，把目录和执行连接一并传给 SDK。供应商的 `connection` 支持开发者配置的地址和密钥，或从当前登录异步取得。应用界面用目录生成选项，用户选模型即可发消息。正式安装时在清单里声明并获批模型网关的 HTTPS 来源。 [模型目录和连接](references/test-model.md)
 
-在开发窗口用 `connectAppHost()` 握手。核对 `session-resources-v1` 和 `agent` 授权，再用 `host.sessions.getConnection()` 返回的 `clientOptions` 和开发者提供的 `providers` 列表或异步加载函数创建 `BobanNomiClient`。从 `client.models.list()` 选供应商 `name` 和模型 `id`，填入 `client.sessions.create()` 的 `configuration.model`。用 AppHost 选择项目时传 `workspaceId`，项目外会话传 `outsideProject: true`。直接连接已有 daemon 时，可以传由该后台访问的执行目录作为 `cwd`。 [Starter 开发窗口步骤](assets/starter/README.md#跑起来)
+在开发窗口用 `connectAppHost()` 握手。核对 `session-resources-v1` 和 `agent` 授权，再用 `host.getAuthorizedAgentConnection()` 返回的 `clientOptions` 和开发者提供的 `providers` 列表或异步加载函数创建 `BobanNomiClient`。从 `client.models.list()` 选供应商 `name` 和模型 `id`，填入 `client.sessions.create()` 的 `configuration.model`。用 AppHost 选择项目时传 `workspaceId`，项目外会话传 `outsideProject: true`。直接连接已有 daemon 时，可以传由该后台访问的执行目录作为 `cwd`。 [Starter 开发窗口步骤](assets/starter/README.md#跑起来)
+
+同一页面共享的 Agent 连接由 AppHost 管理。组件用自己的 `AbortController` 取消请求和订阅。需要停止后台运行时，使用 Client 的会话中断入口。
 
 普通应用页面的连接用于获准的会话操作。插件、渠道、后台 MCP、项目登记或清理等操作由有管理权限的后台连接发起。用户选择本机目录时使用 AppHost，返回的目录 ID 用于 AppHost 文件访问。daemon 按已登记项目创建会话时使用该 daemon 的 `projectId`。
 

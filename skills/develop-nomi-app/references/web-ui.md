@@ -32,11 +32,11 @@ if (directory) {
 
 ## 工作台的会话准备和临时会话
 
-`connectAppHost()` 返回 `AppHost`。先用 `host.hasFeature()` 检查窗口提供的功能。普通应用用经 `agent` 授权的 `host.sessions.getConnection()` 取得受限连接，交给 Client 管理会话和运行。Starter 的项目选择和项目外会话在开发窗口验证。独立工作树、临时侧边聊天、Git 回执和目标窗口按下面的步骤在 Nomi 自带的工作台验证。
+`connectAppHost()` 返回 `AppHost`。先用 `host.hasFeature()` 检查窗口提供的功能。普通应用用经 `agent` 授权的 `host.getAuthorizedAgentConnection()` 取得受限连接，交给 Client 管理会话和运行。共享连接由 AppHost 释放。组件卸载时，用自己的 `AbortSignal` 取消请求或订阅。Starter 的项目选择和项目外会话在开发窗口验证。独立工作树、临时侧边聊天、Git 回执和目标窗口按下面的步骤在 Nomi 自带的工作台验证。
 
 - **选择项目或项目外会话**。Starter 在开发窗口用 `host.workspace.list()` 列出应用已授权的目录，用 `host.workspace.pick()` 添加本机项目。用 `client.sessions.create()` 创建会话，选项目时传 `workspaceId`，选项目外时传 `outsideProject: true`。目录选择和项目执行分别需要 `workspace.select` 和 `workspace.execute`。确认创建成功后再发送输入。
 - **独立工作树会话**。在 `session-controls-v1` 可用且已授予 `workspace.execute` 时，保存已登记的 `workspaceId`、`dataScopeId`、`sessionId`、`requestId` 和配置，再用 `host.sessions.preparation.create(original)` 提交，`original.taskLocation` 填 `"worktree"`。项目外的会话只支持 `outsideProject: true` 与 `taskLocation: "current"`。daemon 准备目录并保存会话绑定。收到 `retry: "query"` 和原 `requestId` 时，用 `host.sessions.preparation.getResult(original)` 查原回执。工作台可在测试 Git 项目中新建会话，选择「任务工作位置 → 独立工作目录」后发送消息，核对执行目录并清理测试会话。
-- **临时侧边聊天**。在 `auxiliary-sessions-v1` 可用时，以当前页面的原会话 `connection` 和 `sessionId` 调 `host.sessions.auxiliary.getOptions`。提交 `open(original)` 前，把选项 ID、`optionsRevision`、原会话连接、会话 ID、`requestId` 与 `id` 留在页面内。`open` 返回临时会话连接，`get(original)` 查询原回执。结束时用 `close(original)` 关闭临时会话，再用 `opened.connection.close()` 释放它的页面连接。保留原会话连接，供回包不明时查询 `closed` 回执。在工作台的「侧边聊天」发送测试消息，关标签时确认「关闭并销毁」。
+- **临时侧边聊天**。在 `auxiliary-sessions-v1` 可用时，以当前页面的原会话 `connection` 和 `sessionId` 调 `host.sessions.auxiliary.getOptions`。提交 `open(original)` 前，把选项 ID、`optionsRevision`、原会话连接、会话 ID、`requestId` 与 `id` 留在页面内。`open` 返回临时会话连接，`get(original)` 查询原回执。结束时用 `close(original)` 关闭临时会话，Main 收到关闭回执后释放它的页面连接。保留原会话连接，供回包不明时查询 `closed` 回执。在工作台的「侧边聊天」发送测试消息，关标签时确认「关闭并销毁」。
 - **Git 回执和窗口**。对已绑定目标发起 `switchBranch` 或 `createBranch` 前保存分支名、预期 HEAD 和 `requestId`。用 `host.desktop.git.getOperation({ targetId, requestId, original })` 查原回执，`original` 形如 `{ kind: "git.switchBranch", body: { branch, expectedHead } }`。重开页面时先核对数据范围与原目录身份，再绑定该目录取新的目标 ID。用完释放目标。当前宿主窗口走 `host.window`。其他已打开的目标窗口走 `host.desktop.windows`，由宿主校验它们与页面和目标的归属。
 
 ## 配置已创建的会话

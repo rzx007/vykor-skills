@@ -3,8 +3,8 @@ import { BobanNomiClient, getVisibleSessionMessages, syncEvents } from "@bobanno
 
 const checkpointKey = "nomi-app-starter.last-test.v2"
 
-/** @param {Pick<import("@bobannomi/client").BobanNomiClientOptions, "providers">} [options] */
-export async function connectNomi({ providers } = {}) {
+/** @param {Pick<import("@bobannomi/client").BobanNomiClientOptions, "providers"> & { signal?: AbortSignal }} [options] */
+export async function connectNomi({ providers, signal } = {}) {
   const host = await connectAppHost({ hostApi: "^0.1.3" })
   if (!["session-resources-v1", "workspace-v1", "resource-catalog-v1"].every(feature => host.hasFeature(feature))) {
     throw new Error("Nomi 未提供目录选择或会话准备，请更新桌面版并从开发窗口打开。")
@@ -19,10 +19,11 @@ export async function connectNomi({ providers } = {}) {
   if (!context.capabilities["workspace.select"]?.granted || !context.capabilities["workspace.execute"]?.granted) {
     throw new Error("请在 Nomi 中批准目录选择和项目执行权限。")
   }
-  const connection = await host.sessions.getConnection()
-  const client = new BobanNomiClient({ ...connection.clientOptions, providers })
+  signal?.throwIfAborted()
+  const { clientOptions } = await host.getAuthorizedAgentConnection()
+  const client = new BobanNomiClient({ ...clientOptions, providers })
   // capabilities 会按安装的 Client SDK 检查后台协议版本。
-  const { dataScopeId, features } = await client.protocol.capabilities({ authenticated: true, scope: "protocol" })
+  const { dataScopeId, features } = await client.protocol.capabilities({ authenticated: true, scope: "protocol", signal })
   if (!dataScopeId) throw new Error("无法确认当前 Agent 后台的数据身份。")
   if (!features.sessionDirectoryCreation || (providers && !features.sessionModelConnections)) {
     throw new Error("当前 Nomi 后台还未提供应用模型连接和会话目录，请更新桌面版后重新打开。")

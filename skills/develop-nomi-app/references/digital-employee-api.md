@@ -64,7 +64,7 @@
 
 ### 把远程模型交给 SDK
 
-下面的 `remoteModels` 是应用已取得的模型列表，`loadModelConnection` 按当前登录返回 `{ baseUrl: apiUrl, apiKey, apiFormat: "openai" }`。`clientOptions` 由 AppHost 的 `host.sessions.getConnection()` 提供。
+下面的 `remoteModels` 是应用已取得的模型列表，`loadModelConnection` 按当前登录返回 `{ baseUrl: apiUrl, apiKey, apiFormat: "openai" }`。`clientOptions` 由 AppHost 的 `host.getAuthorizedAgentConnection()` 提供。
 
 ```js
 import { BobanNomiClient } from "@bobannomi/client"
