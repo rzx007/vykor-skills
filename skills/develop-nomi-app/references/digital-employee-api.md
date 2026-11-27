@@ -2,7 +2,7 @@
 
 数字员工服务的访问地址是 [https://bobanstaff.bobandata.com/](https://bobanstaff.bobandata.com/)。模型服务的 Base URL 由登录后获取的模型配置提供，见[模型目录](#模型目录)。
 
-应用通过远程服务登录、读取模型目录、查积分和办理充值。Nomi SDK 负责本地或远程 daemon 的会话操作。只有用户明确保存模型连接时，才通过获准的供应商管理入口把模型 API 地址和凭证交给 daemon。
+应用通过远程服务登录、读取模型目录、查积分和办理充值。应用需要 Agent 时，将当前账号的模型目录和模型连接交给 Nomi SDK。用户在应用内选模型并发送消息。
 
 本模块依据仓库维护的 `docs/research/digital-employee-account-billing/`，字段核对基线是 `cd58f1d58a0ecf9f260de88d19f54ae251949937`（2026-11-12）。使用其他部署环境时，按该环境提供的域名和发布前缀接入。登录方式和支付规则以所用环境为准。资料记录了源码中的请求和响应，真实环境联调仍待确认。
 
@@ -15,7 +15,7 @@
 | 远程模型服务 | 模型配置返回的 `apiUrl`，加 `/models` | 同次配置返回的模型 `apiKey` |
 | Nomi daemon | 应用传给 Client 的 `baseUrl` | daemon `token` 或 AppHost 提供的会话连接 |
 
-受保护 HTTP 请求使用 `Authorization: Bearer <对应凭证>`，JSON 请求设置 `Content-Type: application/json`。账号服务部分部署还有额外发布前缀，以实际完整地址为准。应用后台持有远程凭证，页面只使用当前账号授权可用的数据。
+受保护 HTTP 请求使用 `Authorization: Bearer <对应凭证>`，JSON 请求设置 `Content-Type: application/json`。账号服务部分部署还有额外发布前缀，以实际完整地址为准。账号凭证由应用后台持有，模型连接按需交给 SDK。
 
 ## 登录
 
@@ -59,16 +59,18 @@
 
 1. 用账号访问令牌请求 `GET /digital/api/v1/model/provider`。个人请求显式传 `billing_scope=personal` 或省略查询参数。企业请求传 `billing_scope=enterprise&enterprise_id=<企业ID>`。读取响应 `{code,msg,data}` 中的 `data.apiUrl`、`data.apiKey` 和默认模型 `data.modelName`。个人配置核对 `ownerUserId` 和 `isActive`。原企业调用检查配置已启用、必要字段有效且 key 以 `ent_` 开头，正式凭证规则按目标环境确认。
 2. 用同次配置的 `apiKey` 请求 `GET {apiUrl}/models`，保留基础路径，例如 `/v1`。示例读取 `{"data":[{"id":"example-chat","display_name":"示例模型"}]}`。原通用解析还接受顶层数组或 `models` 数组，认字符串项或对象的 `id`、`name`、`model`。需要展示能力时读取可选的 `capabilities.supports_vision`、`supports_reasoning`、`max_input_tokens`、`context_window` 等。模型目录请求返回 401 或 403 时，核对模型 key 和服务权限。资费以计费服务为准。
-3. 把供应商 ID、模型 ID、显示名和需要的能力映射成 `ModelProviderInfo[]`。用 `new BobanNomiClient({ baseUrl, token, providers })` 注入，调用 `client.models.list()` 读取。应用切换账号时按新账号重建加载函数或 Client，取消旧账号的请求并丢弃旧结果。
-4. 模型执行需要 daemon 已保存的供应商连接。开发者按[模型目录和连接](./test-model.md)显式保存连接，供应商 ID 与目录的 `name` 一致。随后按所选 ID 设置 `configuration.model = { provider: provider.name, model: model.id }`，用 `session.prompt()` 和 `session.waitForRun()` 发消息并读取结果。
+3. 用模型 ID、显示名和需要的能力生成 `models`，把同一账号的 `apiUrl` 和 `apiKey` 配成供应商的 `connection`。一起传给 `BobanNomiClient`。模型选项从 `client.models.list()` 取得。应用切换账号时取消旧请求，按新账号重建 Client。
+4. 用选项的供应商 `name` 和模型 `id` 设置 `configuration.model`。调用 `session.prompt()` 发消息，以 `session.waitForRun()` 读取结果。Nomi 用应用提供的模型连接执行。 [会话示例](./test-model.md)
 
-### 把远程目录传给 SDK
+### 把远程模型交给 SDK
 
-应用按需调用远程接口。下面用 `remoteModels` 表示应用已取得的模型列表。`providerId` 和 `providerName` 由应用提供，`baseUrl` 和 `token` 用于连接 Nomi daemon。
+下面的 `remoteModels` 是应用已取得的模型列表，`loadModelConnection` 按当前登录返回 `{ baseUrl: apiUrl, apiKey, apiFormat: "openai" }`。`clientOptions` 由 AppHost 的 `host.sessions.getConnection()` 提供。
 
 ```js
 import { BobanNomiClient } from "@bobannomi/client"
 
+const providerId = "digital-employee"
+const providerName = "数字员工"
 const providers = [{
   name: providerId,
   displayName: providerName,
@@ -78,9 +80,10 @@ const providers = [{
     provider: providerName,
     providerName: providerId,
   })),
+  connection: ({ signal }) => loadModelConnection({ signal }),
 }]
 
-const client = new BobanNomiClient({ baseUrl, token, providers })
+const client = new BobanNomiClient({ ...clientOptions, providers })
 ```
 
 ## 积分

@@ -1,12 +1,12 @@
 import { connectAppHost } from "@bobannomi/app-host"
 import { BobanNomiClient, getVisibleSessionMessages, syncEvents } from "@bobannomi/client"
 
-const checkpointKey = "nomi-app-starter.last-test"
+const checkpointKey = "nomi-app-starter.last-test.v2"
 
 /** @param {Pick<import("@bobannomi/client").BobanNomiClientOptions, "providers">} [options] */
 export async function connectNomi({ providers } = {}) {
   const host = await connectAppHost({ hostApi: "^0.1.3" })
-  if (!["session-resources-v1", "session-controls-v1", "workspace-v1", "resource-catalog-v1"].every(feature => host.hasFeature(feature))) {
+  if (!["session-resources-v1", "workspace-v1", "resource-catalog-v1"].every(feature => host.hasFeature(feature))) {
     throw new Error("Nomi 未提供目录选择或会话准备，请更新桌面版并从开发窗口打开。")
   }
   const context = await host.getContext()
@@ -22,14 +22,12 @@ export async function connectNomi({ providers } = {}) {
   const connection = await host.sessions.getConnection()
   const client = new BobanNomiClient({ ...connection.clientOptions, providers })
   // capabilities 会按安装的 Client SDK 检查后台协议版本。
-  const { dataScopeId } = await client.protocol.capabilities({ authenticated: true, scope: "protocol" })
+  const { dataScopeId, features } = await client.protocol.capabilities({ authenticated: true, scope: "protocol" })
   if (!dataScopeId) throw new Error("无法确认当前 Agent 后台的数据身份。")
+  if (!features.sessionDirectoryCreation || (providers && !features.sessionModelConnections)) {
+    throw new Error("当前 Nomi 后台还未提供应用模型连接和会话目录，请更新桌面版后重新打开。")
+  }
   return { host, client, context, dataScopeId }
-}
-
-function creationCompleted(receipt, { sessionId, dataScopeId, creation }) {
-  return receipt?.state === "completed" && receipt.sessionId === sessionId &&
-    receipt.dataScopeId === dataScopeId && receipt.requestId === creation.requestId
 }
 
 export async function sendMessage(nomi, workspaceId, model, inputText, { signal, onText } = {}) {
@@ -38,9 +36,7 @@ export async function sendMessage(nomi, workspaceId, model, inputText, { signal,
   const sessionId = crypto.randomUUID()
   const promptId = crypto.randomUUID()
   const creation = {
-    dataScopeId,
-    sessionId,
-    taskLocation: "current",
+    id: sessionId,
     ...(workspaceId ? { workspaceId } : { outsideProject: true }),
     requestId: crypto.randomUUID(),
     configuration: { model, tools: { allowed: [] }, pluginsEnabled: false, memory: { enabled: false } },
@@ -48,8 +44,8 @@ export async function sendMessage(nomi, workspaceId, model, inputText, { signal,
   const checkpoint = { sessionId, promptId, installationId: context.installationId, dataScopeId }
   const pending = { ...checkpoint, creation }
   await host.storage.set(checkpointKey, pending)
-  const receipt = await host.sessions.preparation.create(creation)
-  if (!creationCompleted(receipt, pending)) return { sessionId, status: "creation_unknown" }
+  const created = await client.sessions.create(creation, { signal })
+  if (created.id !== sessionId) return { sessionId, status: "creation_unknown" }
   await host.storage.set(checkpointKey, checkpoint)
   const session = client.sessions.byId(sessionId)
   const { run } = await session.prompt({
@@ -71,10 +67,9 @@ export async function restoreLastMessage(nomi, signal) {
     throw new Error("当前应用的数据身份与保存的会话不同。")
   }
   if (creation) {
-    const receipt = "taskLocation" in creation
-      ? await host.sessions.preparation.getResult(creation)
-      : await client.sessions.getCreationResult({ sessionId, requestId: creation.requestId, original: creation }, { signal })
-    if (!creationCompleted(receipt, saved.value)) {
+    const receipt = await client.sessions.getCreationResult({ sessionId, requestId: creation.requestId, original: creation }, { signal })
+    if (receipt?.state !== "completed" || receipt.sessionId !== sessionId ||
+        receipt.dataScopeId !== dataScopeId || receipt.requestId !== creation.requestId) {
       return { sessionId, status: "creation_unknown" }
     }
     return { sessionId, status: "created" }

@@ -15,13 +15,29 @@ const workspaceSelect = form.elements.namedItem("workspace")
 const addProject = document.querySelector("#add-project")
 const button = form.querySelector('button[type="submit"]')
 
-const providerId = import.meta.env.VITE_NOMI_PROVIDER_ID?.trim()
-const modelId = import.meta.env.VITE_NOMI_MODEL_ID?.trim()
-const providers = providerId && modelId ? [{
-  name: providerId,
-  displayName: providerId,
-  models: [{ id: modelId, label: modelId, provider: providerId, providerName: providerId }],
-}] : []
+async function readTestModel(path, signal) {
+  const response = await fetch(path, { signal, headers: { "X-Nomi-Starter": "1" }, cache: "no-store" })
+  if (!response.ok) throw new Error("无法读取示例的本机模型配置。")
+  return response.json()
+}
+
+async function providers({ signal }) {
+  if (!import.meta.env.DEV) return []
+  const config = await readTestModel("/__nomi/model", signal)
+  if (!config) return []
+  const name = "starter-provider"
+  const displayName = "测试供应商"
+  return [{
+    name,
+    displayName,
+    models: [{ id: config.model, label: config.model, provider: displayName, providerName: name }],
+    async connection({ signal }) {
+      const connection = await readTestModel("/__nomi/model/connection", signal)
+      if (!connection) throw new Error("示例缺少测试模型连接。")
+      return connection
+    },
+  }]
+}
 
 function show(result) {
   const nextStep = {
@@ -85,7 +101,7 @@ async function start() {
     }
   }
   if (modelSelect.options.length === 1) {
-    status.textContent = "已连接 Nomi。请按 README 提供供应商 ID 和模型 ID，再重启开发服务。"
+    status.textContent = "已连接 Nomi。请按 README 为开发示例提供模型连接。"
     return
   }
   button.disabled = false
